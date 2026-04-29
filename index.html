@@ -28,7 +28,7 @@
     </div>
     <div class="nav__cta">
       <button class="nav__hamburger" aria-label="Menu"><span></span></button>
-      <button class="btn btn--ghost">Connect&nbsp;Wallet</button>
+      <button class="btn btn--ghost" id="wallet-open">Connect&nbsp;Wallet</button>
       <a class="btn btn--primary" href="table.html">
         <span>Sit&nbsp;Down</span>
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 7h12M8 2l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="square"/></svg>
@@ -755,6 +755,126 @@
   </div>
 </div>
 
+<!-- ==================== CONNECT WALLET MODAL ==================== -->
+<div class="modal" id="wallet-modal" role="dialog" aria-modal="true" aria-label="Connect Solana wallet">
+  <div class="modal__panel">
+    <button class="modal__close" id="wallet-close" aria-label="Close">×</button>
+    <h3 class="modal__title">Connect<br/><em>your wallet.</em></h3>
+    <p class="modal__sub">Solana · We never custody your $HP</p>
+
+    <div class="wallet-list">
+      <button class="wallet-row" data-wallet="phantom">
+        <div class="wallet-row__logo" style="background: linear-gradient(135deg, #5340ff 0%, #ab9ff2 100%);">P</div>
+        <div class="wallet-row__main">
+          <div class="wallet-row__name">Phantom</div>
+          <div class="wallet-row__sub">Most popular · browser + mobile</div>
+        </div>
+        <svg class="wallet-row__arrow" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M5 3l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="square"/></svg>
+      </button>
+      <button class="wallet-row" data-wallet="solflare">
+        <div class="wallet-row__logo" style="background: linear-gradient(135deg, #fc7227 0%, #ffb200 100%);">S</div>
+        <div class="wallet-row__main">
+          <div class="wallet-row__name">Solflare</div>
+          <div class="wallet-row__sub">Native Solana · stake support</div>
+        </div>
+        <svg class="wallet-row__arrow" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M5 3l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="square"/></svg>
+      </button>
+      <button class="wallet-row" data-wallet="backpack">
+        <div class="wallet-row__logo" style="background: linear-gradient(135deg, #e33e3e 0%, #6e0a1b 100%);">B</div>
+        <div class="wallet-row__main">
+          <div class="wallet-row__name">Backpack</div>
+          <div class="wallet-row__sub">xNFT · multichain</div>
+        </div>
+        <svg class="wallet-row__arrow" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M5 3l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="square"/></svg>
+      </button>
+      <button class="wallet-row" data-wallet="walletconnect">
+        <div class="wallet-row__logo" style="background: linear-gradient(135deg, #3b99fc 0%, #1a4aaa 100%);">W</div>
+        <div class="wallet-row__main">
+          <div class="wallet-row__name">Wallet Connect</div>
+          <div class="wallet-row__sub">Scan a QR code from any wallet</div>
+        </div>
+        <svg class="wallet-row__arrow" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M5 3l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="square"/></svg>
+      </button>
+    </div>
+
+    <p style="text-align:center; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em; color: var(--bone-3); margin: 0;">
+      No wallet? <a href="#" id="open-buy" style="color: var(--ember); text-decoration: underline;">Get $HP on pump.fun →</a>
+    </p>
+  </div>
+</div>
+
+<!-- ==================== BUY $HP MODAL ==================== -->
+<div class="modal" id="buy-modal" role="dialog" aria-modal="true" aria-label="Get $HP">
+  <div class="modal__panel">
+    <button class="modal__close" id="buy-close" aria-label="Close">×</button>
+    <h3 class="modal__title">Get<br/><em>$HP.</em></h3>
+    <p class="modal__sub">Live on pump.fun · Solana mainnet</p>
+
+    <div style="background: var(--ink); border: 1px solid rgba(244,236,223,0.08); border-radius: var(--r-md); padding: 20px; margin-bottom: 24px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+        <span style="font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--bone-3);">Token</span>
+        <span style="font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--neon);">●&nbsp;Active</span>
+      </div>
+      <div style="font-family: var(--font-display); font-weight: 800; font-size: 32px; letter-spacing: -0.03em;">HYPER POKER</div>
+      <div style="font-family: var(--font-mono); color: var(--ember); margin-top: 4px;">$HP · TBD…address</div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 18px; padding-top: 18px; border-top: 1px solid rgba(244,236,223,0.06);">
+        <div>
+          <div style="font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.16em; color: var(--bone-3); text-transform: uppercase; margin-bottom: 4px;">24h vol</div>
+          <div style="font-family: var(--font-display); font-weight: 700; font-size: 18px; letter-spacing: -0.02em;">412 SOL</div>
+        </div>
+        <div>
+          <div style="font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.16em; color: var(--bone-3); text-transform: uppercase; margin-bottom: 4px;">Holders</div>
+          <div style="font-family: var(--font-display); font-weight: 700; font-size: 18px; letter-spacing: -0.02em;">3,402</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal__actions">
+      <button class="btn btn--ghost" id="buy-cancel">Cancel</button>
+      <a href="https://pump.fun" target="_blank" rel="noopener" class="btn btn--primary">
+        <span>Open pump.fun</span>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 11L11 3M5 3h6v6" stroke="currentColor" stroke-width="1.6" stroke-linecap="square"/></svg>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== MOBILE DRAWER ==================== -->
+<div class="drawer" id="drawer" aria-label="Mobile menu">
+  <div class="drawer__scrim" id="drawer-scrim"></div>
+  <aside class="drawer__panel">
+    <button class="drawer__close" id="drawer-close" aria-label="Close menu">×</button>
+    <div class="drawer__brand">
+      <span class="brand-mark">HP</span>
+      <span class="brand-name">Hyper&nbsp;Poker<span class="ticker">$HP</span></span>
+    </div>
+    <nav class="drawer__nav">
+      <a href="#modes">Play</a>
+      <a href="#leaderboard">Leaderboard</a>
+      <a href="#tournaments">Tournaments</a>
+      <a href="#loop">The Loop</a>
+      <a href="#fair">Fairness</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <div class="drawer__cta">
+      <button class="btn btn--ghost" id="drawer-wallet">Connect Wallet</button>
+      <a class="btn btn--primary" href="table.html">
+        <span>Sit Down</span>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 7h12M8 2l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="square"/></svg>
+      </a>
+    </div>
+  </aside>
+</div>
+
+<!-- ==================== INTRO SPLASH (first visit) ==================== -->
+<div class="intro" id="intro">
+  <div class="intro__inner">
+    <div class="intro__mark">HP</div>
+    <div class="intro__name">Hyper&nbsp;Poker<span class="ticker">$HP</span></div>
+    <div class="intro__line">— drain the house</div>
+  </div>
+</div>
+
 <!-- ==================== BOOT / TRANSITION OVERLAY ==================== -->
 <div class="boot-overlay" id="boot-overlay" aria-hidden="true">
   <div class="boot-overlay__inner">
@@ -763,6 +883,7 @@
   </div>
 </div>
 
+<script src="assets/cards.js"></script>
 <script src="assets/landing.js"></script>
 </body>
 </html>

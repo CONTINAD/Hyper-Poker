@@ -244,14 +244,6 @@
     { caption: 'Pot <em>+12,400</em> · auto-clip rendered',       cards: ['Ah', 'Ks', 'Kc', '7h', '2s', 'Ad', 'Qh'] },
   ];
 
-  function cardHtml(code) {
-    const r = code[0]; const s = code[1];
-    const map = { h: '♥', d: '♦', c: '♣', s: '♠' };
-    const color = (s === 'h' || s === 'd') ? 'red' : 'black';
-    const suit = map[s];
-    return `<div class="card ${color}"><span class="rank">${r}</span><span class="suit">${suit}</span><span class="center">${suit}</span><span class="corner-bl"><span class="rank">${r}</span><span class="suit">${suit}</span></span></div>`;
-  }
-
   let replayTimer = null;
   function playReplay() {
     if (!watchCards) return;
@@ -260,7 +252,10 @@
     const step = () => {
       if (i >= REPLAY.length) return;
       const frame = REPLAY[i];
-      watchCards.innerHTML = frame.cards.map(cardHtml).join('');
+      watchCards.innerHTML = '';
+      frame.cards.forEach((code) => {
+        if (window.HPCard) watchCards.appendChild(HPCard.render(code));
+      });
       watchCaption.innerHTML = frame.caption;
       i++;
       replayTimer = setTimeout(step, 2200);
@@ -364,6 +359,73 @@
       if (!wasOpen) item.classList.add('is-open');
     });
   });
+
+  // --- Wallet modal -----------------------------------------------------
+  const walletModal = document.getElementById('wallet-modal');
+  const buyModal = document.getElementById('buy-modal');
+  const openModalEl = (m) => m && m.classList.add('is-open');
+  const closeModalEl = (m) => m && m.classList.remove('is-open');
+
+  document.getElementById('wallet-open')?.addEventListener('click', () => openModalEl(walletModal));
+  document.getElementById('wallet-close')?.addEventListener('click', () => closeModalEl(walletModal));
+  walletModal?.addEventListener('click', (e) => { if (e.target === walletModal) closeModalEl(walletModal); });
+
+  document.querySelectorAll('.wallet-row').forEach((row) => {
+    row.addEventListener('click', () => {
+      const w = row.dataset.wallet;
+      // brief acknowledgement state (real adapter integration in Phase 2)
+      const orig = row.innerHTML;
+      row.innerHTML = `<div class="wallet-row__main"><div class="wallet-row__name" style="color: var(--neon);">Connecting to ${w}…</div><div class="wallet-row__sub">Approve in your wallet extension</div></div>`;
+      setTimeout(() => {
+        row.innerHTML = `<div class="wallet-row__main"><div class="wallet-row__name" style="color: var(--ember);">Adapter coming Phase 2</div><div class="wallet-row__sub">@solana/wallet-adapter wired in production build</div></div>`;
+        setTimeout(() => { row.innerHTML = orig; }, 2400);
+      }, 1200);
+    });
+  });
+
+  // Buy modal
+  document.getElementById('buy-close')?.addEventListener('click', () => closeModalEl(buyModal));
+  document.getElementById('buy-cancel')?.addEventListener('click', () => closeModalEl(buyModal));
+  buyModal?.addEventListener('click', (e) => { if (e.target === buyModal) closeModalEl(buyModal); });
+  document.getElementById('open-buy')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    closeModalEl(walletModal);
+    setTimeout(() => openModalEl(buyModal), 320);
+  });
+
+  // ESC closes any open modal
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeModalEl(walletModal);
+      closeModalEl(buyModal);
+    }
+  });
+
+  // --- Mobile drawer ----------------------------------------------------
+  const drawer = document.getElementById('drawer');
+  document.querySelector('.nav__hamburger')?.addEventListener('click', () => drawer?.classList.add('is-open'));
+  document.getElementById('drawer-close')?.addEventListener('click', () => drawer?.classList.remove('is-open'));
+  document.getElementById('drawer-scrim')?.addEventListener('click', () => drawer?.classList.remove('is-open'));
+  document.getElementById('drawer-wallet')?.addEventListener('click', () => {
+    drawer?.classList.remove('is-open');
+    setTimeout(() => openModalEl(walletModal), 250);
+  });
+  drawer?.querySelectorAll('a').forEach((a) => {
+    a.addEventListener('click', () => drawer.classList.remove('is-open'));
+  });
+
+  // --- Intro splash on first visit --------------------------------------
+  const intro = document.getElementById('intro');
+  if (intro) {
+    const seen = sessionStorage.getItem('hp-intro-seen');
+    if (seen) {
+      intro.style.display = 'none';
+    } else {
+      sessionStorage.setItem('hp-intro-seen', '1');
+      setTimeout(() => intro.classList.add('hide'), 1700);
+      setTimeout(() => intro.style.display = 'none', 2400);
+    }
+  }
 
   // --- Boot transition on table-bound clicks ----------------------------
   const overlay = document.getElementById('boot-overlay');

@@ -25,6 +25,9 @@
     <div class="table-top__right">
       <span class="table-top__stat"><span class="key">Treasury</span><span class="val val--neon">418,294 SOL</span></span>
       <span class="table-top__stat"><span class="key">Your bag</span><span class="val val--ember">12,400 $HP</span></span>
+      <button class="btn btn--ghost" id="settings-toggle" style="padding:8px 12px;" aria-label="Settings">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
       <button class="btn btn--ghost" style="padding:8px 14px;">Sit out</button>
     </div>
   </header>
@@ -123,18 +126,7 @@
 
         <!-- Hero seat (you) -->
         <div class="hero-seat">
-          <div class="hero-seat__cards" id="hero-cards">
-            <div class="card red">
-              <span class="rank">A</span><span class="suit">♥</span>
-              <span class="center">♥</span>
-              <span class="corner-bl"><span class="rank">A</span><span class="suit">♥</span></span>
-            </div>
-            <div class="card black">
-              <span class="rank">K</span><span class="suit">♠</span>
-              <span class="center">♠</span>
-              <span class="corner-bl"><span class="rank">K</span><span class="suit">♠</span></span>
-            </div>
-          </div>
+          <div class="hero-seat__cards" id="hero-cards" data-cards="Ah Ks"></div>
           <div class="hero-seat__info">
             <span class="hero-seat__name">You</span>
             <span class="hero-seat__stack">9,950 <span class="unit">CHIPS</span></span>
@@ -151,7 +143,7 @@
         <button class="rail__tab" data-tab="chat">Chat</button>
         <button class="rail__tab" data-tab="opps">Opps</button>
       </div>
-      <div class="rail__body">
+      <div class="rail__body" data-tab="log">
         <div class="hand-log" id="hand-log">
           <div class="row"><span class="t">22:13</span><span class="who">DEALER</span><span class="what">shuffles · seed <em>0x8a2f…</em></span></div>
           <div class="row"><span class="t">22:13</span><span class="who">DegenKing</span><span class="what">posts SB <em>25</em></span></div>
@@ -165,6 +157,67 @@
           <div class="row"><span class="t">22:13</span><span class="who">Aria</span><span class="what">3-bets to <em>400</em></span></div>
           <div class="row"><span class="t">22:13</span><span class="who">Roxy</span><span class="what">calls <em>400</em></span></div>
           <div class="row"><span class="t">22:14</span><span class="who" style="color:var(--ember);">YOU</span><span class="what">to act · pot <em>1,250</em></span></div>
+        </div>
+      </div>
+
+      <!-- Chat tab content (hidden until selected) -->
+      <div class="rail__body" data-tab="chat" style="display:none; flex-direction: column; padding: 0;">
+        <div class="chat-list" id="chat-list" style="padding: 18px; flex: 1; overflow-y: auto;">
+          <div class="chat-msg"><div class="chat-msg__avatar">RX</div><div class="chat-msg__body"><div class="chat-msg__name">Roxy · 2m ago</div><div class="chat-msg__text">nh</div></div></div>
+          <div class="chat-msg"><div class="chat-msg__avatar">DG</div><div class="chat-msg__body"><div class="chat-msg__name">DegenKing · 3m ago</div><div class="chat-msg__text emote">🔥🔥🔥</div></div></div>
+          <div class="chat-msg"><div class="chat-msg__avatar">AR</div><div class="chat-msg__body"><div class="chat-msg__name">Aria · 4m ago</div><div class="chat-msg__text">going to grind this all weekend</div></div></div>
+          <div class="chat-msg"><div class="chat-msg__avatar">VL</div><div class="chat-msg__body"><div class="chat-msg__name">Volt · 5m ago</div><div class="chat-msg__text">brutal river</div></div></div>
+          <div class="chat-msg"><div class="chat-msg__avatar">SK</div><div class="chat-msg__body"><div class="chat-msg__name">Skinny · 7m ago</div><div class="chat-msg__text emote">💀</div></div></div>
+        </div>
+        <div class="chat-input">
+          <input id="chat-input" type="text" placeholder="Say something — / for emotes" maxlength="120" />
+          <button id="chat-send">Send</button>
+        </div>
+      </div>
+
+      <!-- Opps tab content -->
+      <div class="rail__body" data-tab="opps" style="display:none; padding: 18px;">
+        <div class="opps-list">
+          <div class="opp-row">
+            <div class="opp-row__avatar">SK</div>
+            <div class="opp-row__main">
+              <div class="opp-row__name">Skinny</div>
+              <div class="opp-row__stat">VPIP 22 · PFR 17 · AGG 1.8</div>
+            </div>
+            <span class="opp-row__tag tight">Tight</span>
+          </div>
+          <div class="opp-row">
+            <div class="opp-row__avatar">DG</div>
+            <div class="opp-row__main">
+              <div class="opp-row__name">DegenKing</div>
+              <div class="opp-row__stat">VPIP 48 · PFR 22 · AGG 3.2</div>
+            </div>
+            <span class="opp-row__tag loose">Loose</span>
+          </div>
+          <div class="opp-row">
+            <div class="opp-row__avatar">??</div>
+            <div class="opp-row__main">
+              <div class="opp-row__name">Aria</div>
+              <div class="opp-row__stat">VPIP 26 · PFR 21 · AGG 2.4</div>
+            </div>
+            <span class="opp-row__tag gto">GTO</span>
+          </div>
+          <div class="opp-row">
+            <div class="opp-row__avatar">VL</div>
+            <div class="opp-row__main">
+              <div class="opp-row__name">Volt</div>
+              <div class="opp-row__stat">VPIP 38 · PFR 8 · AGG 1.1</div>
+            </div>
+            <span class="opp-row__tag fish">Calling stn</span>
+          </div>
+          <div class="opp-row">
+            <div class="opp-row__avatar">RX</div>
+            <div class="opp-row__main">
+              <div class="opp-row__name">Roxy</div>
+              <div class="opp-row__stat">VPIP 24 · PFR 19 · AGG 2.6</div>
+            </div>
+            <span class="opp-row__tag tight">Tight</span>
+          </div>
         </div>
       </div>
 
@@ -205,6 +258,28 @@
 
 </div>
 
+<!-- ==================== SETTINGS PANEL ==================== -->
+<div class="settings" id="settings-panel">
+  <div class="settings__title">Settings</div>
+  <div class="settings__row">
+    <div><span class="lbl">Sound effects</span><span class="desc">Chip clicks, deal flips, win thump</span></div>
+    <div class="toggle on" data-pref="sound"></div>
+  </div>
+  <div class="settings__row">
+    <div><span class="lbl">Animations</span><span class="desc">Card flips, chip flies, confetti</span></div>
+    <div class="toggle on" data-pref="anim"></div>
+  </div>
+  <div class="settings__row">
+    <div><span class="lbl">4-color deck</span><span class="desc">Distinct color per suit</span></div>
+    <div class="toggle" data-pref="fourcolor"></div>
+  </div>
+  <div class="settings__row">
+    <div><span class="lbl">Auto-clip wins</span><span class="desc">Render replays of pots &gt; 50bb</span></div>
+    <div class="toggle on" data-pref="autoclip"></div>
+  </div>
+</div>
+
+<script src="assets/cards.js"></script>
 <script src="assets/table.js"></script>
 </body>
 </html>

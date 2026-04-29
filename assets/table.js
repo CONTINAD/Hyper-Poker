@@ -9,6 +9,16 @@
 (() => {
 
   // ----------------------------------------------------------------------
+  //  RENDER HERO HAND from data-cards on load
+  // ----------------------------------------------------------------------
+  const heroCardsEl = document.getElementById('hero-cards');
+  if (heroCardsEl && window.HPCard) {
+    const codes = (heroCardsEl.dataset.cards || 'Ah Ks').split(/\s+/).filter(Boolean);
+    heroCardsEl.innerHTML = '';
+    codes.forEach((code) => heroCardsEl.appendChild(HPCard.render(code)));
+  }
+
+  // ----------------------------------------------------------------------
   //  STATE
   // ----------------------------------------------------------------------
   const state = {
@@ -41,6 +51,7 @@
   }
 
   function chipClick() {
+    if (window.__hpSoundOn && !window.__hpSoundOn()) return;
     const ctx = ac();
     const t = ctx.currentTime;
     const o = ctx.createOscillator();
@@ -56,6 +67,7 @@
   }
 
   function cardFlip() {
+    if (window.__hpSoundOn && !window.__hpSoundOn()) return;
     const ctx = ac();
     const t = ctx.currentTime;
     const noise = ctx.createBufferSource();
@@ -75,6 +87,7 @@
   }
 
   function thump() {
+    if (window.__hpSoundOn && !window.__hpSoundOn()) return;
     const ctx = ac();
     const t = ctx.currentTime;
     const o = ctx.createOscillator();
@@ -195,20 +208,20 @@
   }
 
   function dealCards(from, to) {
-    const slots = document.querySelectorAll('.board .card-slot');
+    const slots = document.querySelectorAll('.board .card-slot, .board .card');
+    const codeMap = { '♠':'s','♥':'h','♦':'d','♣':'c' };
     for (let i = from; i < to; i++) {
       setTimeout(() => {
         const slot = slots[i];
         if (!slot) return;
         const c = board[i];
-        const card = document.createElement('div');
-        card.className = `card ${c.color}`;
-        card.style.animationDelay = `0s`;
-        card.innerHTML = `
-          <span class="rank">${c.rank}</span><span class="suit">${c.suit}</span>
-          <span class="center">${c.suit}</span>
-          <span class="corner-bl"><span class="rank">${c.rank}</span><span class="suit">${c.suit}</span></span>
-        `;
+        const code = c.rank + (codeMap[c.suit] || c.suit.toLowerCase());
+        const card = window.HPCard ? HPCard.render(code) : (() => {
+          const el = document.createElement('div');
+          el.className = `card ${c.color}`;
+          el.innerHTML = `<span class="rank">${c.rank}</span><span class="suit">${c.suit}</span><span class="center">${c.suit}</span><span class="corner-bl"><span class="rank">${c.rank}</span><span class="suit">${c.suit}</span></span>`;
+          return el;
+        })();
         slot.replaceWith(card);
         cardFlip();
       }, (i - from) * 180);
@@ -277,6 +290,7 @@
   }
 
   function boom() {
+    if (window.__hpSoundOn && !window.__hpSoundOn()) return;
     // big bass thump on showdown win
     const ctx = ac();
     const t = ctx.currentTime;
@@ -342,14 +356,105 @@
   }
 
   // ----------------------------------------------------------------------
-  //  RAIL TABS
+  //  RAIL TABS — toggle active panel by data-tab
   // ----------------------------------------------------------------------
   document.querySelectorAll('.rail__tab').forEach((tab) => {
     tab.addEventListener('click', () => {
       document.querySelectorAll('.rail__tab').forEach((t) => t.classList.remove('active'));
       tab.classList.add('active');
+      const target = tab.dataset.tab;
+      document.querySelectorAll('.rail__body').forEach((body) => {
+        body.style.display = body.dataset.tab === target ? '' : 'none';
+        if (body.dataset.tab === 'chat' && target === 'chat') body.style.display = 'flex';
+      });
     });
   });
+
+  // ----------------------------------------------------------------------
+  //  CHAT — send message
+  // ----------------------------------------------------------------------
+  const chatInput = document.getElementById('chat-input');
+  const chatSend = document.getElementById('chat-send');
+  const chatList = document.getElementById('chat-list');
+
+  function sendChat() {
+    if (!chatInput || !chatList) return;
+    const text = chatInput.value.trim();
+    if (!text) return;
+    const isEmote = /^[\p{Extended_Pictographic}\s]+$/u.test(text);
+    const row = document.createElement('div');
+    row.className = 'chat-msg';
+    row.innerHTML = `
+      <div class="chat-msg__avatar" style="background: var(--ember); color: var(--ink);">YOU</div>
+      <div class="chat-msg__body">
+        <div class="chat-msg__name"><span class="me">YOU · just now</span></div>
+        <div class="chat-msg__text ${isEmote ? 'emote' : ''}">${escapeHtml(text)}</div>
+      </div>
+    `;
+    chatList.appendChild(row);
+    chatList.scrollTop = chatList.scrollHeight;
+    chatInput.value = '';
+    chipClick();
+  }
+  function escapeHtml(s) {
+    return s.replace(/[<>&"']/g, (c) => ({ '<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;' }[c]));
+  }
+  if (chatSend) chatSend.addEventListener('click', sendChat);
+  if (chatInput) chatInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') sendChat(); });
+
+  // ----------------------------------------------------------------------
+  //  SETTINGS PANEL
+  // ----------------------------------------------------------------------
+  const settingsToggle = document.getElementById('settings-toggle');
+  const settingsPanel = document.getElementById('settings-panel');
+  if (settingsToggle && settingsPanel) {
+    settingsToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      settingsPanel.classList.toggle('is-open');
+    });
+    document.addEventListener('click', (e) => {
+      if (!settingsPanel.contains(e.target) && !settingsToggle.contains(e.target)) {
+        settingsPanel.classList.remove('is-open');
+      }
+    });
+  }
+
+  // load saved prefs
+  const prefs = JSON.parse(localStorage.getItem('hp-prefs') || '{}');
+  const defaultPrefs = { sound: true, anim: true, fourcolor: false, autoclip: true };
+  Object.assign(defaultPrefs, prefs);
+  document.querySelectorAll('.toggle[data-pref]').forEach((t) => {
+    const key = t.dataset.pref;
+    if (defaultPrefs[key]) t.classList.add('on'); else t.classList.remove('on');
+    t.addEventListener('click', () => {
+      t.classList.toggle('on');
+      defaultPrefs[key] = t.classList.contains('on');
+      localStorage.setItem('hp-prefs', JSON.stringify(defaultPrefs));
+      applyPrefs();
+    });
+  });
+  function applyPrefs() {
+    document.body.classList.toggle('fourcolor', !!defaultPrefs.fourcolor);
+    document.body.dataset.soundOff = defaultPrefs.sound ? '' : '1';
+    document.body.dataset.animOff  = defaultPrefs.anim  ? '' : '1';
+  }
+  applyPrefs();
+
+  // expose pref check globally for sfx functions to gate themselves
+  window.__hpSoundOn = () => defaultPrefs.sound !== false;
+
+  // ----------------------------------------------------------------------
+  //  AI TELL — opponent chip bobbing + time-pressure ring
+  // ----------------------------------------------------------------------
+  const activeSeat = document.querySelector('.seat--active');
+  if (activeSeat) {
+    let secs = 14;
+    setInterval(() => {
+      if (secs <= 5) activeSeat.classList.add('is-pressure');
+      else activeSeat.classList.remove('is-pressure');
+      secs = secs > 0 ? secs - 1 : 14;
+    }, 1000);
+  }
 
   // ----------------------------------------------------------------------
   //  EMOTE RAIL — bubble drifts up from your hero seat

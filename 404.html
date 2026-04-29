@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Folded — Hyper Poker</title>
+  <link rel="stylesheet" href="assets/styles.css" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23FF2D6F'/%3E%3Ctext x='16' y='22' text-anchor='middle' font-family='Arial Black' font-size='16' font-weight='900' fill='%230A0807'%3EHP%3C/text%3E%3C/svg%3E" />
+</head>
+<body>
+
+<div class="shell" style="min-height: 100vh; display: flex; flex-direction: column;">
+
+  <header class="nav" style="padding: 22px 0;">
+    <a href="/" class="nav__brand" aria-label="Hyper Poker home">
+      <span class="brand-mark">HP</span>
+      <span class="brand-name">Hyper&nbsp;Poker<span class="ticker">$HP</span></span>
+    </a>
+  </header>
+
+  <main style="flex: 1; display: grid; place-items: center; padding: 40px 0; position: relative;">
+    <!-- decorative torn-card pile -->
+    <div aria-hidden="true" style="position: absolute; right: 6%; top: 12%; opacity: 0.5; transform: rotate(8deg);">
+      <div class="card black" style="width: 100px; height: 140px; transform: rotate(-12deg); position: absolute;">
+        <span class="rank" style="font-size: 18px;">2</span><span class="suit">♣</span>
+        <span class="center">♣</span>
+        <span class="corner-bl"><span class="rank" style="font-size: 18px;">2</span><span class="suit">♣</span></span>
+      </div>
+      <div class="card red" style="width: 100px; height: 140px; transform: rotate(14deg) translate(40px, 20px); position: absolute;">
+        <span class="rank" style="font-size: 18px;">7</span><span class="suit">♦</span>
+        <span class="center">♦</span>
+        <span class="corner-bl"><span class="rank" style="font-size: 18px;">7</span><span class="suit">♦</span></span>
+      </div>
+    </div>
+
+    <div style="text-align: center; max-width: 600px;">
+      <div style="font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.2em; color: var(--bone-3); text-transform: uppercase; margin-bottom: 16px;">
+        — Hand 404 · seat empty
+      </div>
+      <h1 style="font-family: var(--font-display); font-weight: 800; font-size: clamp(64px, 12vw, 160px); letter-spacing: -0.05em; line-height: 0.85; margin: 0 0 20px; text-transform: uppercase;">
+        <span class="stroke" style="-webkit-text-stroke: 1.5px var(--bone); color: transparent;">404</span><br/>
+        <span style="font-family: var(--font-editorial); font-style: italic; font-weight: 400; color: var(--ember); text-transform: none;">folded.</span>
+      </h1>
+      <p style="font-family: var(--font-editorial); font-style: italic; font-size: clamp(18px, 2vw, 22px); color: var(--bone-2); max-width: 38ch; margin: 0 auto 32px;">
+        This page mucked its cards. Take your <strong style="color: var(--bone); font-style: normal; font-family: var(--font-display); font-weight: 600;">action</strong> elsewhere.
+      </p>
+      <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+        <a class="btn btn--primary btn--lg" href="/">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M13 7H1M6 12L1 7l5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="square"/></svg>
+          <span>Back to lobby</span>
+        </a>
+        <a class="btn btn--mono btn--lg" href="table.html">
+          <span>Sit at a table</span>
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 7h12M8 2l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="square"/></svg>
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <footer style="padding: 24px 0; border-top: 1px solid rgba(244,236,223,0.06); font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--bone-3); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+    <span>© 2026 Hyper Poker</span>
+    <span>Drain the house</span>
+  </footer>
+</div>
+
+</body>
+</html>
