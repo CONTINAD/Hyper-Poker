@@ -134,6 +134,12 @@
     };
 
     setPositions();
+    // clear render sigs so all cards redraw for the new deal
+    document.getElementById('hero-cards')?.removeAttribute('data-sig');
+    document.getElementById('board')?.removeAttribute('data-sig');
+    document.querySelectorAll('.seat .seat__cards').forEach((el) => el.removeAttribute('data-sig'));
+    document.querySelectorAll('.bet-stack').forEach((el) => el.remove());
+    document.querySelectorAll('.win-pop, .hand-banner').forEach((el) => el.remove());
     renderAll();
     // visible blind chip stacks
     renderBetStack(everyone[sbIdx]);
@@ -156,9 +162,14 @@
     if (roundComplete()) { advanceStreet(); return; }
     if (p.id === 'you') {
       setHeroToAct(true);
+      moveSpotlightTo('you');
       startTimer(p, 'you');
+      // honour any pre-action selection
+      maybeAutoPreact();
+      togglePreactRow(false);
     } else {
       setHeroToAct(false);
+      togglePreactRow(true);
       setActiveSeat(p.id);
       showThinking(p.id, true);
       const delay = 1100 + Math.random() * 1400;
@@ -169,6 +180,45 @@
       }, delay);
     }
   }
+
+  // ----- pre-action -----
+  let preact = null; // 'check-fold' | 'call-any' | 'raise-any' | null
+  function togglePreactRow(showRow) {
+    const row = document.getElementById('preact-row');
+    if (!row) return;
+    row.style.display = showRow ? 'flex' : 'none';
+    // when it's your turn (showRow=false), clear the selection visually
+    if (!showRow) {
+      preact = null;
+      row.querySelectorAll('.preact-row__btn').forEach((b) => b.classList.remove('is-on'));
+    }
+  }
+  function maybeAutoPreact() {
+    if (!preact) return;
+    const toCall = state.currentBet - state.hero.bet;
+    if (preact === 'check-fold') {
+      setTimeout(() => applyAction(state.hero, toCall === 0 ? 'check' : 'fold'), 200);
+    } else if (preact === 'call-any') {
+      setTimeout(() => applyAction(state.hero, toCall > 0 ? 'call' : 'check'), 200);
+    } else if (preact === 'raise-any') {
+      const amt = +document.getElementById('bet-range').value || (state.currentBet * 2);
+      setTimeout(() => applyAction(state.hero, 'raise', amt), 200);
+    }
+  }
+  document.querySelectorAll('.preact-row__btn').forEach((b) => {
+    b.addEventListener('click', () => {
+      const k = b.dataset.pre;
+      if (preact === k) {
+        preact = null;
+        b.classList.remove('is-on');
+      } else {
+        document.querySelectorAll('.preact-row__btn').forEach((x) => x.classList.remove('is-on'));
+        preact = k;
+        b.classList.add('is-on');
+      }
+      chipClick();
+    });
+  });
 
   // ----- thinking dots -----
   function showThinking(id, on) {
@@ -254,6 +304,9 @@
     clearTimerRing();
     showThinking(p.id, false);
     state.streetActed.add(p.id);
+    // remember pre-action stack so we can animate the count-down
+    p._stackBefore = p.stack;
+    state._potBefore = state.pot;
     if (action === 'fold') {
       p.folded = true;
       p.lastAction = 'folded';
@@ -297,10 +350,56 @@
       renderBetStack(p);
       chipClick(); setTimeout(chipClick, 80);
     }
-    renderAll();
+    // TARGETED render — DON'T re-create hero hole cards (was causing jumps)
+    renderActor(p);
+    renderPot(state._potBefore);
+    renderControls();
     // advance to next actor
     state.toAct = (state.toAct + 1) % state.everyone.length;
     setTimeout(nextAct, 300);
+  }
+
+  // re-render only the seat that just acted: stack count-down + bet pill +
+  // folded/all-in styling. Never touches cards.
+  function renderActor(p) {
+    if (p.id === 'you') {
+      const heroStackEl = document.querySelector('.hero-seat__stack');
+      if (heroStackEl) animateNumber(heroStackEl, p._stackBefore ?? p.stack, p.stack, ' <span class="unit">CHIPS</span>');
+      // hide hero cards if folded
+      const heroCards = document.getElementById('hero-cards');
+      if (heroCards) heroCards.style.opacity = p.folded ? '0.2' : '1';
+    } else {
+      const seatEl = document.querySelector(`.seat[data-pos="${SEATS.find((s) => s.id === p.id)?.pos}"]`);
+      if (!seatEl) return;
+      seatEl.classList.toggle('seat--folded', p.folded);
+      const stackEl = seatEl.querySelector('.seat__stack');
+      if (stackEl) animateNumber(stackEl, p._stackBefore ?? p.stack, p.stack, ' <span class="unit">CHIPS</span>');
+      const betEl = seatEl.querySelector('.seat__bet');
+      if (betEl) {
+        if (p.folded) betEl.textContent = '— folded';
+        else if (p.allIn) betEl.textContent = '— all in';
+        else if (p.bet > 0) betEl.textContent = `Bet ${p.bet.toLocaleString()}`;
+        else if (p.lastAction) betEl.textContent = `— ${p.lastAction}`;
+        else betEl.textContent = '';
+      }
+    }
+    renderBetStack(p);
+  }
+
+  // animate text number from a → b over ~400ms
+  function animateNumber(el, from, to, suffix = '') {
+    if (from === to) { el.innerHTML = `${to.toLocaleString()}${suffix}`; return; }
+    const start = performance.now();
+    const dur = 380;
+    const diff = to - from;
+    const tick = (now) => {
+      const t = Math.min(1, (now - start) / dur);
+      const eased = 1 - Math.pow(1 - t, 3);
+      const v = Math.round(from + diff * eased);
+      el.innerHTML = `${v.toLocaleString()}${suffix}`;
+      if (t < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
   }
 
   function advanceStreet() {
@@ -427,10 +526,20 @@
 
   function awardPot(winners, reason) {
     const split = Math.floor(state.pot / winners.length);
+    // animate chips flying from pot → each winner
+    winners.forEach((w) => flyChipsFromPot(w.id, 8));
     winners.forEach((w) => {
+      const before = w.stack;
       w.stack += split;
       log(w.name === 'You' ? 'YOU' : w.name, `wins <em>+${split}</em> · <span style="color:var(--neon)">${reason}</span>`);
       if (w.id !== 'you') botChatChance(w, 'win');
+      // animate the winner's stack count-up
+      const seatStackEl = w.id === 'you'
+        ? document.querySelector('.hero-seat__stack')
+        : document.querySelector(`.seat[data-pos="${SEATS.find((s) => s.id === w.id)?.pos}"] .seat__stack`);
+      if (seatStackEl) {
+        setTimeout(() => animateNumber(seatStackEl, before, w.stack, ' <span class="unit">CHIPS</span>'), 500);
+      }
     });
     // losers occasionally chat
     state.everyone.forEach((p) => {
@@ -451,6 +560,35 @@
       state.everyone.forEach((p) => { if (p.stack < BB * 4) p.stack = Math.max(p.stack, 4000); });
       newHand();
     }, 4800);
+  }
+
+  function flyChipsFromPot(toId, n) {
+    const pot = document.querySelector('.pot')?.getBoundingClientRect();
+    const dest = toId === 'you'
+      ? document.querySelector('.hero-seat')?.getBoundingClientRect()
+      : document.querySelector(`.seat[data-pos="${SEATS.find((s) => s.id === toId)?.pos}"]`)?.getBoundingClientRect();
+    if (!pot || !dest) return;
+    for (let i = 0; i < n; i++) {
+      const c = document.createElement('div');
+      c.className = 'chip-fly';
+      const sx = pot.left + pot.width / 2 - 14 + (Math.random() * 24 - 12);
+      const sy = pot.top + pot.height / 2 - 14 + (Math.random() * 16 - 8);
+      const ex = dest.left + dest.width / 2 - 14;
+      const ey = dest.top  + dest.height / 2 - 14;
+      c.style.left = sx + 'px';
+      c.style.top  = sy + 'px';
+      document.body.appendChild(c);
+      const dur = 600 + Math.random() * 280;
+      const delay = i * 40;
+      c.animate(
+        [{ left: sx + 'px', top: sy + 'px', opacity: 0, transform: 'scale(0.5)' },
+         { offset: 0.15, opacity: 1, transform: 'scale(1)' },
+         { left: ex + 'px', top: ey + 'px', opacity: 1, transform: 'scale(0.85)' }],
+        { duration: dur, delay, easing: 'cubic-bezier(0.16, 1, 0.3, 1)', fill: 'forwards' }
+      );
+      setTimeout(() => c.remove(), dur + delay + 30);
+    }
+    chipClick(); setTimeout(chipClick, 80); setTimeout(chipClick, 160);
   }
 
   function showWinPop(text) {
@@ -474,11 +612,17 @@
     renderControls();
   }
 
+  // Only re-create hero hole DOM if cards changed. Prevents the
+  // deal-in animation re-firing on every bot action.
   function renderHole() {
     const el = document.getElementById('hero-cards');
     if (!el) return;
+    const sig = state.hero.hole.join(' ');
+    if (el.dataset.sig === sig) return;
+    el.dataset.sig = sig;
     el.innerHTML = '';
     state.hero.hole.forEach((c) => el.appendChild(HPCard.render(c)));
+    el.style.opacity = state.hero.folded ? '0.2' : '1';
   }
 
   // ----- bet stack visualization (chips in front of seat) -----
@@ -589,24 +733,29 @@
         else if (p.lastAction) betEl.textContent = `— ${p.lastAction}`;
         else betEl.textContent = '';
       }
-      // show cards (back) for non-folded players, or face for showdown
+      // cards: back when hidden, face when revealed, nothing when folded
+      // diff against last sig so we don't replay deal-in on every action
       const cardsEl = el.querySelector('.seat__cards');
       if (cardsEl) {
-        cardsEl.innerHTML = '';
-        if (!p.folded) {
-          if (p.reveal) {
-            p.hole.forEach((c) => {
-              const mini = HPCard.render(c);
-              mini.classList.add('mini-face');
-              mini.style.transform = 'scale(0.45)';
-              mini.style.transformOrigin = 'top left';
-              cardsEl.appendChild(mini);
-            });
-          } else {
-            for (let i = 0; i < 2; i++) {
-              const back = document.createElement('div');
-              back.className = 'mini-back';
-              cardsEl.appendChild(back);
+        const sig = p.folded ? 'folded' : (p.reveal ? `face:${p.hole.join('')}` : 'back');
+        if (cardsEl.dataset.sig !== sig) {
+          cardsEl.dataset.sig = sig;
+          cardsEl.innerHTML = '';
+          if (!p.folded) {
+            if (p.reveal) {
+              p.hole.forEach((c) => {
+                const mini = HPCard.render(c);
+                mini.classList.add('mini-face');
+                mini.style.transform = 'scale(0.45)';
+                mini.style.transformOrigin = 'top left';
+                cardsEl.appendChild(mini);
+              });
+            } else {
+              for (let i = 0; i < 2; i++) {
+                const back = document.createElement('div');
+                back.className = 'mini-back';
+                cardsEl.appendChild(back);
+              }
             }
           }
         }
@@ -624,9 +773,14 @@
     }
   }
 
+  // Only re-paint the board if it changed (prevents flop/turn/river
+  // cards from re-animating when something else triggers a render).
   function renderBoard() {
     const board = document.getElementById('board');
     if (!board) return;
+    const sig = state.board.join(' ');
+    if (board.dataset.sig === sig) return;
+    board.dataset.sig = sig;
     board.innerHTML = '';
     for (let i = 0; i < 5; i++) {
       if (i < state.board.length) {
@@ -641,9 +795,14 @@
     }
   }
 
-  function renderPot() {
+  function renderPot(fromValue) {
     const a = document.getElementById('pot-amount');
-    if (a) a.textContent = state.pot.toLocaleString();
+    if (!a) return;
+    if (fromValue != null && fromValue !== state.pot) {
+      animateNumber(a, fromValue, state.pot);
+    } else {
+      a.textContent = state.pot.toLocaleString();
+    }
   }
 
   function setHeroToAct(yes) {
@@ -667,6 +826,23 @@
     document.querySelectorAll('.seat').forEach((s) => s.classList.remove('seat--active'));
     const sel = `.seat[data-pos="${SEATS.find((s) => s.id === id).pos}"]`;
     document.querySelector(sel)?.classList.add('seat--active');
+    moveSpotlightTo(id);
+  }
+  function moveSpotlightTo(id) {
+    const spot = document.getElementById('felt-spot');
+    const felt = document.getElementById('felt');
+    if (!spot || !felt) return;
+    let host;
+    if (id === 'you') host = document.querySelector('.hero-seat');
+    else host = document.querySelector(`.seat[data-pos="${SEATS.find((s) => s.id === id)?.pos}"]`);
+    if (!host) { spot.classList.remove('is-on'); return; }
+    const f = felt.getBoundingClientRect();
+    const h = host.getBoundingClientRect();
+    const x = (h.left + h.width / 2) - f.left;
+    const y = (h.top + h.height / 2) - f.top;
+    spot.style.left = x + 'px';
+    spot.style.top  = y + 'px';
+    spot.classList.add('is-on');
   }
 
   function renderControls() {

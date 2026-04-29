@@ -38,6 +38,9 @@
     <div class="felt-wrap scanlines">
       <div class="felt" id="felt">
 
+        <!-- spotlight that follows the active seat -->
+        <div class="felt__spot" id="felt-spot" aria-hidden="true"></div>
+
         <!-- Community cards -->
         <div class="board" id="board">
           <div class="card-slot" data-slot="0"></div>
@@ -251,6 +254,13 @@
       <button class="btn btn--fold" id="btn-fold">Fold</button>
       <button class="btn btn--call" id="btn-call">Call <span style="color:var(--bone-3); margin-left:6px;">400</span></button>
       <button class="btn btn--raise" id="btn-raise">Raise to <span id="raise-amount" style="margin-left:6px;">1,200</span></button>
+    </div>
+
+    <!-- pre-action: toggle while it's not your turn -->
+    <div class="preact-row" id="preact-row" style="grid-column: 1 / -1;">
+      <button class="preact-row__btn" data-pre="check-fold"><span class="check"></span> Check / Fold</button>
+      <button class="preact-row__btn" data-pre="call-any"><span class="check"></span> Call any</button>
+      <button class="preact-row__btn" data-pre="raise-any"><span class="check"></span> Raise any</button>
     </div>
   </footer>
 
