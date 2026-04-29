@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Lobby — Hyper Poker</title>
+  <link rel="stylesheet" href="assets/styles.css" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23FF2D6F'/%3E%3Ctext x='16' y='22' text-anchor='middle' font-family='Arial Black' font-size='16' font-weight='900' fill='%230A0807'%3EHP%3C/text%3E%3C/svg%3E" />
+</head>
+<body>
+
+<header class="shell">
+  <nav class="nav">
+    <a href="index.html" class="nav__brand">
+      <span class="brand-mark">HP</span>
+      <span class="brand-name">Hyper&nbsp;Poker<span class="ticker">$HP</span></span>
+    </a>
+    <div class="nav__links">
+      <a href="index.html#modes">Home</a>
+      <a href="lobby.html" style="color: var(--ember);">Lobby</a>
+      <a href="index.html#tournaments">Tournaments</a>
+      <a href="profile.html">Profile</a>
+      <a href="index.html#fair">Fairness</a>
+    </div>
+    <div class="nav__cta">
+      <button class="btn btn--ghost">Connect&nbsp;Wallet</button>
+      <a class="btn btn--primary" href="table.html">
+        <span>Quick&nbsp;sit</span>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 7h12M8 2l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="square"/></svg>
+      </a>
+    </div>
+  </nav>
+</header>
+
+<main class="shell lobby">
+  <header class="lobby__head">
+    <div>
+      <p class="eyebrow"><span class="dot"></span><span>142 tables online · 1,407 seated</span></p>
+      <h1 class="lobby__title">Pick<br/><em>your seat.</em></h1>
+    </div>
+    <div class="lobby__filters" id="lobby-filters">
+      <button class="active" data-filter="all">All</button>
+      <button data-filter="cash">Cash</button>
+      <button data-filter="tourney">Tournaments</button>
+      <button data-filter="bots">Vs Bots</button>
+      <button data-filter="holders">Holders only</button>
+    </div>
+  </header>
+
+  <div class="lobby__grid" id="lobby-grid"></div>
+</main>
+
+<footer class="footer">
+  <div class="shell">
+    <div class="footer__bottom">
+      <span>© 2026 Hyper Poker · Free-to-play · 18+ where required</span>
+      <span>Built on Solana</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+const TABLES = [
+  { name: 'Back Room',     blinds: '5 / 10',     stakes: 'cash',    type: 'cash',    seats: 6, taken: 4, prize: '—',           ping: 32, holders: false },
+  { name: 'Table Seven',   blinds: '25 / 50',    stakes: 'cash',    type: 'cash',    seats: 6, taken: 5, prize: '—',           ping: 28, holders: false, primary: true },
+  { name: 'Hi-Roller',     blinds: '100 / 200',  stakes: 'cash',    type: 'cash',    seats: 6, taken: 3, prize: '—',           ping: 41, holders: false },
+  { name: 'Whale Room',    blinds: '1K / 2K',    stakes: 'cash',    type: 'cash',    seats: 6, taken: 4, prize: '—',           ping: 22, holders: true  },
+  { name: 'Daily Degen',   blinds: 'Turbo',      stakes: 'mtt',     type: 'tourney', seats: 9, taken: 7, prize: '120 SOL',     ping: 18, holders: false },
+  { name: 'Friday Main',   blinds: 'Standard',   stakes: 'mtt',     type: 'tourney', seats: 9, taken: 9, prize: '2,400 SOL',   ping: 24, holders: false, hot: true },
+  { name: 'Sunday Major',  blinds: 'Deep stack', stakes: 'mtt',     type: 'tourney', seats: 9, taken: 6, prize: '800 SOL',     ping: 30, holders: true  },
+  { name: 'GTO Drill',     blinds: '10 / 20',    stakes: 'bots',    type: 'bots',    seats: 6, taken: 6, prize: '—',           ping: 12, holders: false },
+  { name: 'Maniac Pit',    blinds: '5 / 10',     stakes: 'bots',    type: 'bots',    seats: 6, taken: 6, prize: '—',           ping: 12, holders: false },
+];
+
+function seatDots(seats, taken) {
+  let html = '';
+  for (let i = 0; i < seats; i++) html += `<span class="lobby-card__seat ${i < taken ? 'taken' : ''}"></span>`;
+  return html;
+}
+
+function render(filter = 'all') {
+  const grid = document.getElementById('lobby-grid');
+  grid.innerHTML = '';
+  TABLES.filter((t) => filter === 'all' || t.type === filter || (filter === 'holders' && t.holders))
+    .forEach((t, i) => {
+      const card = document.createElement('article');
+      card.className = 'lobby-card';
+      const locked = t.holders;
+      if (locked) card.dataset.locked = 'true';
+      card.innerHTML = `
+        <div class="lobby-card__head">
+          <div>
+            <h3 class="lobby-card__name">${t.name}</h3>
+            <p class="lobby-card__sub">${t.type === 'tourney' ? 'MTT · Treasury freeroll' : t.type === 'bots' ? 'Vs Bots · Practice' : 'Cash · No-Limit Hold’em'}${t.hot ? ' · Hot' : ''}</p>
+          </div>
+          <div class="lobby-card__seats">${seatDots(t.seats, t.taken)}</div>
+        </div>
+        <div class="lobby-card__felt">$HP</div>
+        <div class="lobby-card__rows">
+          <div class="lobby-card__row"><span class="k">Blinds</span><span class="v">${t.blinds}</span></div>
+          <div class="lobby-card__row"><span class="k">Seats</span><span class="v">${t.taken}/${t.seats}</span></div>
+          <div class="lobby-card__row"><span class="k">${t.type === 'tourney' ? 'Prize pool' : 'Avg pot'}</span><span class="v v--ember">${t.type === 'tourney' ? t.prize : (Math.round(parseInt(t.blinds) * 12 || 200)).toLocaleString() + ' chips'}</span></div>
+          <div class="lobby-card__row"><span class="k">Ping</span><span class="v v--neon">${t.ping}ms</span></div>
+        </div>
+        <a href="table.html" class="lobby-card__cta">
+          ${locked ? 'Holders only · Verify' : t.taken === t.seats ? 'Watch' : 'Take a seat'}
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 6h10M7 2l4 4-4 4" stroke="currentColor" stroke-width="1.6"/></svg>
+        </a>
+      `;
+      grid.appendChild(card);
+    });
+}
+
+document.querySelectorAll('#lobby-filters button').forEach((b) => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('#lobby-filters button').forEach((x) => x.classList.remove('active'));
+    b.classList.add('active');
+    render(b.dataset.filter);
+  });
+});
+
+render();
+</script>
+</body>
+</html>

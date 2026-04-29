@@ -71,14 +71,14 @@
           <div class="seat__bet">— folded</div>
         </div>
 
-        <div class="seat seat--folded seat--tl" data-pos="tl">
+        <div class="seat seat--tl" data-pos="tl">
           <div class="seat__avatar">DG</div>
           <div class="seat__name">DegenKing</div>
           <div class="seat__stack">6,100 <span class="unit">CHIPS</span></div>
           <div class="seat__bet">— folded</div>
         </div>
 
-        <div class="seat seat--active seat--tr" data-pos="tr">
+        <div class="seat seat--tr" data-pos="tr">
           <div class="seat__action-tag">Thinking · 0:14</div>
           <div class="seat__cards">
             <div class="mini-back"></div>
@@ -90,7 +90,7 @@
           <div class="seat__bet">Bet 400</div>
         </div>
 
-        <div class="seat seat--folded seat--ml" data-pos="ml">
+        <div class="seat seat--ml" data-pos="ml">
           <div class="seat__avatar">VL</div>
           <div class="seat__name">Volt</div>
           <div class="seat__stack">3,950 <span class="unit">CHIPS</span></div>
@@ -109,8 +109,6 @@
           <div class="seat__bet">Bet 400</div>
         </div>
 
-        <!-- Dealer button (near hero seat) -->
-        <div class="dealer-btn">D</div>
 
         <!-- Emote rail (toggled on emote button click) -->
         <button class="emote-toggle" id="emote-toggle" aria-label="Send emote">😎</button>
@@ -126,7 +124,7 @@
 
         <!-- Hero seat (you) -->
         <div class="hero-seat">
-          <div class="hero-seat__cards" id="hero-cards" data-cards="Ah Ks"></div>
+          <div class="hero-seat__cards" id="hero-cards"></div>
           <div class="hero-seat__info">
             <span class="hero-seat__name">You</span>
             <span class="hero-seat__stack">9,950 <span class="unit">CHIPS</span></span>
@@ -280,6 +278,7 @@
 </div>
 
 <script src="assets/cards.js"></script>
+<script src="assets/poker.js"></script>
 <script src="assets/table.js"></script>
 </body>
 </html>

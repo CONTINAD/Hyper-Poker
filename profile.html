@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Profile — Hyper Poker</title>
+  <link rel="stylesheet" href="assets/styles.css" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23FF2D6F'/%3E%3Ctext x='16' y='22' text-anchor='middle' font-family='Arial Black' font-size='16' font-weight='900' fill='%230A0807'%3EHP%3C/text%3E%3C/svg%3E" />
+</head>
+<body>
+
+<header class="shell">
+  <nav class="nav">
+    <a href="index.html" class="nav__brand">
+      <span class="brand-mark">HP</span>
+      <span class="brand-name">Hyper&nbsp;Poker<span class="ticker">$HP</span></span>
+    </a>
+    <div class="nav__links">
+      <a href="index.html#modes">Home</a>
+      <a href="lobby.html">Lobby</a>
+      <a href="index.html#tournaments">Tournaments</a>
+      <a href="profile.html" style="color: var(--ember);">Profile</a>
+      <a href="index.html#fair">Fairness</a>
+    </div>
+    <div class="nav__cta">
+      <button class="btn btn--ghost">Connect&nbsp;Wallet</button>
+      <a class="btn btn--primary" href="table.html">
+        <span>Quick&nbsp;sit</span>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 7h12M8 2l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="square"/></svg>
+      </a>
+    </div>
+  </nav>
+</header>
+
+<main class="shell profile">
+  <header class="profile__head">
+    <div class="profile__avatar">YO</div>
+    <div>
+      <p class="eyebrow"><span class="dot"></span><span>Online · Last hand 2m ago</span></p>
+      <h1 class="profile__title">You<br/><em>(seat 6).</em></h1>
+      <div class="profile__sub">
+        Joined Apr 2026 · 32K hands · Solana wallet not connected
+        <span class="holder">$HP HOLDER</span>
+      </div>
+      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <a class="btn btn--primary" href="table.html">
+          <span>Continue session</span>
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 7h12M8 2l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="square"/></svg>
+        </a>
+        <button class="btn btn--mono">Edit profile</button>
+        <button class="btn btn--mono">Share replays</button>
+      </div>
+    </div>
+  </header>
+
+  <section class="profile__stats">
+    <div class="profile-stat">
+      <div class="profile-stat__key">Bag</div>
+      <div class="profile-stat__val profile-stat__val--ember"><span id="p-stack">9,950</span><span class="unit">CHIPS</span></div>
+      <div class="profile-stat__delta"><span class="pos">+2,400</span> this session</div>
+    </div>
+    <div class="profile-stat">
+      <div class="profile-stat__key">Win rate</div>
+      <div class="profile-stat__val profile-stat__val--neon">12.4<span class="unit">BB/100</span></div>
+      <div class="profile-stat__delta"><span class="pos">+1.8</span> last 30 days</div>
+    </div>
+    <div class="profile-stat">
+      <div class="profile-stat__key">Hands played</div>
+      <div class="profile-stat__val">32,108</div>
+      <div class="profile-stat__delta">412 this week</div>
+    </div>
+    <div class="profile-stat">
+      <div class="profile-stat__key">Treasury claimed</div>
+      <div class="profile-stat__val profile-stat__val--ember">+1,840<span class="unit">SOL</span></div>
+      <div class="profile-stat__delta">7 tournament cashes</div>
+    </div>
+  </section>
+
+  <section class="profile__columns">
+    <div>
+      <header class="section-head" style="margin-bottom: 24px;">
+        <div class="section-head__left">
+          <h2 class="section-head__title" style="font-size: 32px;">Replay<br/><em>library.</em></h2>
+          <p class="section-head__sub">Auto-clipped pots over 50bb. Tap any row to play.</p>
+        </div>
+      </header>
+      <div class="replay-list">
+        <div class="replay-row">
+          <div class="replay-row__thumb">A♥K♠</div>
+          <div class="replay-row__main">
+            <div class="nm">Aces full of kings</div>
+            <div class="meta">Hand #41,209 · Friday Main · 6-max</div>
+          </div>
+          <div class="replay-row__amt">+12,400</div>
+          <div class="replay-row__time">3M AGO</div>
+        </div>
+        <div class="replay-row">
+          <div class="replay-row__thumb">Q♠J♦</div>
+          <div class="replay-row__main">
+            <div class="nm">Bluff caught on the river</div>
+            <div class="meta">Hand #41,202 · Cash 25/50</div>
+          </div>
+          <div class="replay-row__amt neg">-1,800</div>
+          <div class="replay-row__time">14M AGO</div>
+        </div>
+        <div class="replay-row">
+          <div class="replay-row__thumb">7♣7♦</div>
+          <div class="replay-row__main">
+            <div class="nm">Set on the flop, slow-played</div>
+            <div class="meta">Hand #41,184 · Daily Degen</div>
+          </div>
+          <div class="replay-row__amt">+8,200</div>
+          <div class="replay-row__time">42M AGO</div>
+        </div>
+        <div class="replay-row">
+          <div class="replay-row__thumb">A♦K♣</div>
+          <div class="replay-row__main">
+            <div class="nm">Wheel straight, 4-bet pot</div>
+            <div class="meta">Hand #41,151 · Cash 100/200</div>
+          </div>
+          <div class="replay-row__amt">+24,800</div>
+          <div class="replay-row__time">2H AGO</div>
+        </div>
+        <div class="replay-row">
+          <div class="replay-row__thumb">9♠9♥</div>
+          <div class="replay-row__main">
+            <div class="nm">Set over set, all-in turn</div>
+            <div class="meta">Hand #41,103 · Whale Room</div>
+          </div>
+          <div class="replay-row__amt">+38,200</div>
+          <div class="replay-row__time">5H AGO</div>
+        </div>
+        <div class="replay-row">
+          <div class="replay-row__thumb">T♦T♣</div>
+          <div class="replay-row__main">
+            <div class="nm">Cooler at final table</div>
+            <div class="meta">Hand #40,902 · Friday Main</div>
+          </div>
+          <div class="replay-row__amt neg">-15,400</div>
+          <div class="replay-row__time">YESTERDAY</div>
+        </div>
+      </div>
+
+      <div class="activity-graph">
+        <div class="activity-graph__title">— Hands played · last 28 days</div>
+        <div class="activity-bars" id="activity-bars"></div>
+      </div>
+    </div>
+
+    <aside>
+      <header class="section-head" style="margin-bottom: 24px;">
+        <div class="section-head__left">
+          <h2 class="section-head__title" style="font-size: 32px;">Style<br/><em>profile.</em></h2>
+          <p class="section-head__sub">Computed from your last 1,000 hands.</p>
+        </div>
+      </header>
+
+      <div style="display: grid; gap: 12px;">
+        <div class="opp-row">
+          <div class="opp-row__avatar" style="border-color: var(--ember);">YO</div>
+          <div class="opp-row__main">
+            <div class="opp-row__name">Tendency</div>
+            <div class="opp-row__stat">VPIP 24 · PFR 19 · AGG 2.4</div>
+          </div>
+          <span class="opp-row__tag tight">Tight-Aggressive</span>
+        </div>
+        <div class="lobby-card__rows" style="background: var(--ink-2); border: 1px solid rgba(244,236,223,0.08); border-radius: var(--r-md); padding: 16px;">
+          <div class="lobby-card__row"><span class="k">3-bet %</span><span class="v">7.2%</span></div>
+          <div class="lobby-card__row"><span class="k">C-bet flop</span><span class="v">68%</span></div>
+          <div class="lobby-card__row"><span class="k">Fold to 3-bet</span><span class="v">61%</span></div>
+          <div class="lobby-card__row"><span class="k">River agg</span><span class="v">42%</span></div>
+          <div class="lobby-card__row"><span class="k">WTSD</span><span class="v">28%</span></div>
+          <div class="lobby-card__row"><span class="k">W$SD</span><span class="v v--neon">54%</span></div>
+        </div>
+
+        <div style="background: var(--ink-2); border: 1px solid rgba(244,236,223,0.08); border-radius: var(--r-md); padding: 18px;">
+          <div style="font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.18em; color: var(--bone-3); text-transform: uppercase; margin-bottom: 14px;">Achievements</div>
+          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <span class="opp-row__tag gto">First win</span>
+            <span class="opp-row__tag tight">10K hands</span>
+            <span class="opp-row__tag loose">Final table</span>
+            <span class="opp-row__tag fish">Bluff caught</span>
+            <span class="opp-row__tag gto">Quads</span>
+            <span class="opp-row__tag tight">Royal flush</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="shell">
+    <div class="footer__bottom">
+      <span>© 2026 Hyper Poker</span>
+      <span>Drain the house</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+// activity graph
+const bars = document.getElementById('activity-bars');
+for (let i = 0; i < 28; i++) {
+  const bar = document.createElement('div');
+  bar.className = 'activity-bars__bar';
+  const h = 8 + Math.random() * 72;
+  bar.style.height = h + '%';
+  bar.style.opacity = 0.4 + (h / 100) * 0.6;
+  bars.appendChild(bar);
+}
+// pull stack from localStorage if available
+const stack = localStorage.getItem('hp-stack');
+if (stack) document.getElementById('p-stack').textContent = parseInt(stack).toLocaleString();
+</script>
+</body>
+</html>
