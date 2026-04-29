@@ -585,16 +585,27 @@ body::after {
 
 .mini-card--back {
   background:
-    repeating-linear-gradient(45deg, var(--blood-2) 0 8px, var(--blood) 8px 16px);
-  border: 1px solid rgba(0,0,0,0.4);
+    radial-gradient(80% 60% at 50% 40%, var(--blood) 0%, var(--blood-2) 70%, #1d030a 100%);
+  border: 1px solid rgba(0,0,0,0.5);
+  position: relative;
+  overflow: hidden;
+}
+.mini-card--back::before {
+  content:''; position:absolute; inset: 4px;
+  border: 1px solid rgba(255,45,111,0.3);
+  border-radius: 4px;
+  background:
+    repeating-linear-gradient(45deg, transparent 0 6px, rgba(255,45,111,0.07) 6px 7px),
+    repeating-linear-gradient(-45deg, transparent 0 6px, rgba(0,0,0,0.15) 6px 7px);
 }
 .mini-card--back::after{
   content:'HP'; inset: 0; display:grid; place-items:center;
-  font-family: var(--font-display); font-weight: 800; font-size: 22px;
+  font-family: var(--font-display); font-weight: 900; font-size: 20px;
   color: var(--ember);
   border: none;
-  letter-spacing: -0.04em;
-  text-shadow: 0 0 8px rgba(255,45,111,0.5);
+  letter-spacing: -0.05em;
+  text-shadow: 0 0 12px rgba(255,45,111,0.6), 0 1px 0 rgba(0,0,0,0.6);
+  z-index: 2;
 }
 
 .fan { position:relative; width: 220px; height: 120px; }
@@ -716,10 +727,34 @@ body::after {
 .holders__col--holder {
   background: linear-gradient(180deg, rgba(110,10,27,0.4) 0%, rgba(17,13,11,0.95) 100%);
   position: relative;
+  overflow: hidden;
+  isolation: isolate;
 }
 .holders__col--holder::before {
   content:''; position:absolute; top:0; left:0; right:0; height:1px;
   background: linear-gradient(90deg, transparent, var(--ember), transparent);
+  z-index: 2;
+}
+/* holographic sweep — diagonal sheen drifts every ~8s */
+.holders__col--holder::after {
+  content:''; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(
+    115deg,
+    transparent 35%,
+    rgba(255,45,111,0.08) 45%,
+    rgba(0,229,199,0.06) 50%,
+    rgba(255,45,111,0.08) 55%,
+    transparent 65%
+  );
+  background-size: 240% 240%;
+  animation: holoSweep 8s linear infinite;
+  z-index: 1;
+  mix-blend-mode: screen;
+}
+.holders__col--holder > * { position: relative; z-index: 3; }
+@keyframes holoSweep {
+  0%   { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
 }
 
 .holders__title {
@@ -863,32 +898,88 @@ body::after {
   text-transform: uppercase; color: var(--bone-3);
 }
 
-/* ---------- card animations on landing hero ---------- */
-.float-card {
+/* ---------- floating 3D card cluster behind hero ---------- */
+.hero-cluster {
   position: absolute;
-  width: 180px; height: 252px;
-  border-radius: 10px;
-  background: var(--bone);
-  box-shadow:
-    0 40px 80px -10px rgba(0,0,0,0.7),
-    0 0 0 1px rgba(0,0,0,0.4) inset;
+  inset: 0;
   pointer-events: none;
-  display:flex; flex-direction:column; padding: 16px;
-  font-family: var(--font-mono); font-weight: 700; color: var(--blood);
+  z-index: 0;
+  overflow: hidden;
+  perspective: 1200px;
+}
+.hero-cluster__card {
+  position: absolute;
+  width: 160px; height: 224px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #fff 0%, var(--bone) 60%, #d6cab8 100%);
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,0.5) inset,
+    0 1px 0 rgba(255,255,255,0.6) inset,
+    0 30px 60px -10px rgba(0,0,0,0.7),
+    0 0 80px rgba(255,45,111,0.08);
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--blood);
+  display: flex; flex-direction: column; padding: 14px 16px;
   transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+  opacity: 0.85;
 }
-.float-card .rank { font-size: 38px; line-height: 1; }
-.float-card .suit { font-size: 32px; line-height: 1; }
-.float-card .center {
+.hero-cluster__card.black { color: #131313; }
+.hero-cluster__card .rank { font-size: 30px; line-height: 1; }
+.hero-cluster__card .suit { font-size: 26px; line-height: 1; margin-top: 2px; }
+.hero-cluster__card .center {
   position: absolute; inset: 0; display:grid; place-items:center;
-  font-size: 96px; line-height: 1;
+  font-size: 88px; line-height: 1;
+  opacity: 0.85;
 }
-.float-card .corner-bl {
-  position: absolute; bottom: 16px; right: 16px;
+.hero-cluster__card .corner-bl {
+  position: absolute; bottom: 14px; right: 16px;
   transform: rotate(180deg);
-  display:flex; flex-direction:column; align-items: flex-start;
+  display: flex; flex-direction: column;
 }
-.float-card.black { color: #131313; }
+.hero-cluster__card::after {
+  content: ''; position: absolute; inset: 6px;
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 6px; pointer-events: none;
+}
+
+/* card positions — desktop only, offset to right side so they don't fight the type */
+@media (min-width: 1100px){
+  .hero-cluster__card.c1 {
+    top: 18%; right: 38%;
+    transform: rotate(-14deg) translateZ(-60px);
+    animation: float1 14s ease-in-out infinite;
+  }
+  .hero-cluster__card.c2 {
+    top: 8%; right: 18%;
+    transform: rotate(8deg) translateZ(20px);
+    opacity: 0.95;
+    animation: float2 16s ease-in-out infinite;
+  }
+  .hero-cluster__card.c3 {
+    top: 56%; right: 32%;
+    transform: rotate(20deg) translateZ(-30px);
+    opacity: 0.7;
+    animation: float3 12s ease-in-out infinite;
+  }
+}
+@media (max-width: 1099px){ .hero-cluster { display: none; } }
+
+@keyframes float1 {
+  0%, 100% { transform: rotate(-14deg) translateZ(-60px) translateY(0); }
+  50%      { transform: rotate(-12deg) translateZ(-60px) translateY(-12px); }
+}
+@keyframes float2 {
+  0%, 100% { transform: rotate(8deg) translateZ(20px) translateY(0); }
+  50%      { transform: rotate(10deg) translateZ(20px) translateY(-18px); }
+}
+@keyframes float3 {
+  0%, 100% { transform: rotate(20deg) translateZ(-30px) translateY(0); }
+  50%      { transform: rotate(18deg) translateZ(-30px) translateY(-8px); }
+}
+
 
 /* ====================================================
    POKER TABLE PAGE
@@ -1497,6 +1588,280 @@ body::after {
 .spacer-lg { height: 100px; }
 
 /* ====================================================
+   CHAPTER DIVIDER — magenta scan-line + chapter mark
+   ==================================================== */
+.chapter-rule {
+  display: flex; align-items: center; gap: 14px;
+  padding: 28px 0 0;
+}
+.chapter-rule::before, .chapter-rule::after {
+  content:''; flex:1; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(244,236,223,0.18), transparent);
+}
+.chapter-rule__mark {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--bone-3);
+  white-space: nowrap;
+}
+.chapter-rule__mark .pip {
+  display: inline-block;
+  width: 6px; height: 6px;
+  background: var(--ember);
+  transform: rotate(45deg);
+}
+
+/* ====================================================
+   LEADERBOARD / HALL OF FAME
+   ==================================================== */
+.leaderboard {
+  padding: 80px 0;
+  border-top: 1px solid rgba(244,236,223,0.06);
+}
+.leaderboard__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 28px;
+}
+@media (min-width: 900px){
+  .leaderboard__grid { grid-template-columns: 1.1fr 1fr; gap: 56px; align-items: start; }
+}
+
+/* podium for top 3 */
+.podium {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr 1fr;
+  gap: 12px;
+  align-items: end;
+  margin-bottom: 24px;
+}
+.podium__col {
+  position: relative;
+  padding: 18px 14px 22px;
+  background: var(--ink-2);
+  border: 1px solid rgba(244,236,223,0.08);
+  border-radius: var(--r-md);
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+}
+.podium__col--1st { background: linear-gradient(180deg, rgba(230,180,80,0.18), var(--ink-2)); border-color: rgba(230,180,80,0.3); padding: 28px 14px 32px; }
+.podium__col--2nd { padding: 22px 14px 26px; }
+.podium__rank {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 36px;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  color: var(--bone-3);
+}
+.podium__col--1st .podium__rank { font-size: 56px; color: var(--gold); }
+.podium__col--2nd .podium__rank { font-size: 44px; color: var(--bone-2); }
+.podium__avatar {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, var(--ink-3), var(--ink-4));
+  border: 1px solid rgba(244,236,223,0.15);
+  display: grid; place-items: center;
+  font-family: var(--font-display); font-weight: 700; font-size: 14px;
+  color: var(--bone);
+}
+.podium__col--1st .podium__avatar {
+  width: 56px; height: 56px;
+  border: 2px solid var(--gold);
+  box-shadow: 0 0 24px rgba(230,180,80,0.4);
+  font-size: 18px;
+}
+.podium__name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  text-align: center;
+}
+.podium__earnings {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ember);
+  font-weight: 500;
+}
+.podium__col--1st .podium__earnings { color: var(--gold); font-size: 14px; }
+
+/* leaderboard table */
+.leaderboard__table {
+  background: var(--ink-2);
+  border: 1px solid rgba(244,236,223,0.08);
+  border-radius: var(--r-md);
+  overflow: hidden;
+}
+.leaderboard__head, .leaderboard__row {
+  display: grid;
+  grid-template-columns: 28px 1fr auto auto;
+  gap: 14px;
+  padding: 12px 18px;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+.leaderboard__head {
+  background: var(--ink-3);
+  color: var(--bone-3);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.leaderboard__row { border-top: 1px solid rgba(244,236,223,0.05); transition: background .2s; }
+.leaderboard__row:hover { background: rgba(255,45,111,0.04); }
+.leaderboard__row .rk { color: var(--bone-3); }
+.leaderboard__row .nm { color: var(--bone); font-family: var(--font-display); font-weight: 600; font-size: 13px; letter-spacing: -0.01em; }
+.leaderboard__row .hd { font-size: 11px; color: var(--bone-3); }
+.leaderboard__row .pl { color: var(--ember); font-weight: 700; font-size: 13px; }
+.leaderboard__row .holder-tag {
+  display: inline-block; margin-left: 6px;
+  padding: 1px 5px;
+  font-size: 8px; letter-spacing: 0.14em;
+  background: rgba(255,45,111,0.15);
+  border: 1px solid rgba(255,45,111,0.4);
+  color: var(--ember);
+  border-radius: 2px;
+  vertical-align: 2px;
+}
+
+/* ====================================================
+   FAQ
+   ==================================================== */
+.faq {
+  padding: 80px 0;
+  border-top: 1px solid rgba(244,236,223,0.06);
+}
+.faq__list { display: grid; gap: 0; }
+.faq__item {
+  border-top: 1px solid rgba(244,236,223,0.08);
+  padding: 0;
+}
+.faq__item:last-child { border-bottom: 1px solid rgba(244,236,223,0.08); }
+.faq__q {
+  width: 100%;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 22px 0;
+  text-align: left;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 18px;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: var(--bone);
+  cursor: pointer;
+  transition: color .2s;
+}
+.faq__q:hover { color: var(--ember); }
+.faq__sign {
+  font-family: var(--font-mono);
+  font-size: 22px;
+  color: var(--ember);
+  transition: transform .3s var(--ease-out);
+}
+.faq__item.is-open .faq__sign { transform: rotate(45deg); }
+.faq__a {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height .4s var(--ease-out);
+  color: var(--bone-2);
+  font-size: 15px;
+  line-height: 1.7;
+}
+.faq__a-inner { padding-bottom: 22px; max-width: 70ch; }
+.faq__a-inner em { color: var(--ember); font-style: normal; font-weight: 600; }
+.faq__item.is-open .faq__a { max-height: 320px; }
+
+/* ====================================================
+   CONFETTI / CHIP RAIN — fired on showdown win
+   ==================================================== */
+.confetti-piece {
+  position: fixed;
+  top: -20px;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  z-index: 7000;
+  pointer-events: none;
+  background: repeating-conic-gradient(from 0deg, var(--ember) 0 18deg, var(--bone) 18deg 36deg);
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.4), 0 2px 0 rgba(0,0,0,0.4);
+}
+.confetti-piece.gold {
+  background: repeating-conic-gradient(from 0deg, var(--gold) 0 18deg, #fff4d6 18deg 36deg);
+}
+.confetti-piece.neon {
+  background: repeating-conic-gradient(from 0deg, var(--neon) 0 18deg, var(--bone) 18deg 36deg);
+}
+
+/* ====================================================
+   EMOTE RAIL on the table
+   ==================================================== */
+.emote-rail {
+  position: absolute;
+  bottom: 130px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: none;
+  gap: 6px;
+  background: rgba(10,8,7,0.9);
+  border: 1px solid rgba(244,236,223,0.12);
+  border-radius: 999px;
+  padding: 6px 10px;
+  z-index: 8;
+  backdrop-filter: blur(8px);
+}
+.emote-rail.is-open { display: flex; }
+.emote-rail button {
+  font-size: 22px;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  display: grid; place-items: center;
+  transition: background .15s, transform .15s var(--ease-snap);
+}
+.emote-rail button:hover { background: rgba(255,255,255,0.08); transform: scale(1.15); }
+.emote-toggle {
+  position: absolute;
+  bottom: 70px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 8;
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  background: var(--ink-3);
+  border: 1px solid rgba(244,236,223,0.15);
+  display: grid; place-items: center;
+  font-size: 18px;
+  cursor: pointer;
+  transition: all .2s;
+}
+.emote-toggle:hover { border-color: var(--ember); background: var(--ink-4); }
+
+/* floating emote bubble that drifts up */
+.emote-bubble {
+  position: absolute;
+  font-size: 32px;
+  pointer-events: none;
+  z-index: 9;
+  animation: emoteFloat 1.8s var(--ease-out) forwards;
+}
+@keyframes emoteFloat {
+  0%   { opacity: 0; transform: scale(0.5) translateY(0); }
+  20%  { opacity: 1; transform: scale(1.2) translateY(-10px); }
+  100% { opacity: 0; transform: scale(0.9) translateY(-90px); }
+}
+
+/* custom chip cursor on table */
+.felt {
+  cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'><circle cx='14' cy='14' r='12' fill='%23FF2D6F' stroke='%230A0807' stroke-width='2'/><circle cx='14' cy='14' r='5' fill='%23F4ECDF'/></svg>") 14 14, auto;
+}
+
+/* ====================================================
    TOURNAMENTS SECTION
    ==================================================== */
 .tournaments {
@@ -1689,8 +2054,29 @@ body::after {
   background: var(--ink-2);
   border: 1px solid rgba(244,236,223,0.08);
   border-radius: var(--r-md);
-  min-height: 180px;
+  min-height: 220px;
   display: flex; flex-direction: column; justify-content: space-between;
+  overflow: hidden;
+  isolation: isolate;
+}
+.loop__node-icon {
+  width: 48px; height: 48px;
+  display: grid; place-items: center;
+  background: rgba(255,45,111,0.1);
+  border: 1px solid rgba(255,45,111,0.25);
+  border-radius: var(--r-sm);
+  color: var(--ember);
+  margin-bottom: 14px;
+}
+.loop__node--live .loop__node-icon {
+  background: rgba(0,229,199,0.1);
+  border-color: rgba(0,229,199,0.3);
+  color: var(--neon);
+  animation: iconPulse 2.4s ease-in-out infinite;
+}
+@keyframes iconPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0,229,199,0.4); }
+  50%      { box-shadow: 0 0 0 8px rgba(0,229,199,0); }
 }
 .loop__node--live { border-color: rgba(0,229,199,0.3); background: linear-gradient(180deg, rgba(0,229,199,0.05), var(--ink-2)); }
 .loop__node-num {

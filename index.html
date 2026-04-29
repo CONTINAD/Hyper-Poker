@@ -20,10 +20,11 @@
     </a>
     <div class="nav__links">
       <a href="#modes">Play</a>
-      <a href="#treasury">Treasury</a>
-      <a href="#holders">Holders</a>
-      <a href="#fair">Fairness</a>
+      <a href="#leaderboard">Leaderboard</a>
       <a href="#tournaments">Tournaments</a>
+      <a href="#loop">Loop</a>
+      <a href="#fair">Fairness</a>
+      <a href="#faq">FAQ</a>
     </div>
     <div class="nav__cta">
       <button class="nav__hamburger" aria-label="Menu"><span></span></button>
@@ -38,6 +39,23 @@
 
 <!-- ==================== HERO ==================== -->
 <section class="hero">
+  <div class="hero-cluster" aria-hidden="true">
+    <div class="hero-cluster__card c1 black">
+      <span class="rank">K</span><span class="suit">♠</span>
+      <span class="center">♠</span>
+      <span class="corner-bl"><span class="rank">K</span><span class="suit">♠</span></span>
+    </div>
+    <div class="hero-cluster__card c2">
+      <span class="rank">A</span><span class="suit">♥</span>
+      <span class="center">♥</span>
+      <span class="corner-bl"><span class="rank">A</span><span class="suit">♥</span></span>
+    </div>
+    <div class="hero-cluster__card c3 black">
+      <span class="rank">Q</span><span class="suit">♣</span>
+      <span class="center">♣</span>
+      <span class="corner-bl"><span class="rank">Q</span><span class="suit">♣</span></span>
+    </div>
+  </div>
   <div class="shell">
     <div class="hero__grid">
       <!-- LEFT: copy -->
@@ -389,6 +407,63 @@
   </div>
 </section>
 
+<!-- ==================== LEADERBOARD ==================== -->
+<section class="shell leaderboard" id="leaderboard">
+  <header class="section-head">
+    <div class="section-head__left">
+      <h2 class="section-head__title">Hall&nbsp;of<br/><em>fame.</em></h2>
+      <p class="section-head__sub">Weekly leaderboard ranked by treasury cashed. Top three get a permanent seat on the homepage. Resets every Sunday 00:00 UTC.</p>
+    </div>
+    <span class="section-head__num">Ch.&nbsp;04&nbsp;/&nbsp;Glory</span>
+  </header>
+
+  <div class="leaderboard__grid">
+    <!-- LEFT: top 3 podium -->
+    <div>
+      <div class="podium">
+        <div class="podium__col podium__col--2nd">
+          <div class="podium__rank">2</div>
+          <div class="podium__avatar">VL</div>
+          <div class="podium__name">Vela</div>
+          <div class="podium__earnings">+58,200</div>
+        </div>
+        <div class="podium__col podium__col--1st">
+          <div class="podium__rank">1</div>
+          <div class="podium__avatar">AT</div>
+          <div class="podium__name">Atlas</div>
+          <div class="podium__earnings">+91,200 SOL</div>
+        </div>
+        <div class="podium__col podium__col--3rd">
+          <div class="podium__rank">3</div>
+          <div class="podium__avatar">SN</div>
+          <div class="podium__name">Saint</div>
+          <div class="podium__earnings">+42,800</div>
+        </div>
+      </div>
+      <p style="text-align:center; font-family: var(--font-editorial); font-style: italic; color: var(--bone-3); font-size: 14px;">
+        — week 17 · resets in <span style="color:var(--neon); font-family: var(--font-mono); font-style:normal;" id="lb-reset">02d 13:42:08</span>
+      </p>
+    </div>
+
+    <!-- RIGHT: full top 10 table -->
+    <div class="leaderboard__table">
+      <div class="leaderboard__head">
+        <span>#</span>
+        <span>Player</span>
+        <span>Hands</span>
+        <span style="text-align:right;">Cashed</span>
+      </div>
+      <div class="leaderboard__row"><span class="rk">04</span><span class="nm">Riv</span><span class="hd">2,184</span><span class="pl" style="text-align:right;">+38,400</span></div>
+      <div class="leaderboard__row"><span class="rk">05</span><span class="nm">Roxy<span class="holder-tag">$HP</span></span><span class="hd">1,902</span><span class="pl" style="text-align:right;">+31,200</span></div>
+      <div class="leaderboard__row"><span class="rk">06</span><span class="nm">Mox</span><span class="hd">3,402</span><span class="pl" style="text-align:right;">+28,900</span></div>
+      <div class="leaderboard__row"><span class="rk">07</span><span class="nm">CryptoKid</span><span class="hd">1,455</span><span class="pl" style="text-align:right;">+24,100</span></div>
+      <div class="leaderboard__row"><span class="rk">08</span><span class="nm">DegenKing<span class="holder-tag">$HP</span></span><span class="hd">2,801</span><span class="pl" style="text-align:right;">+21,500</span></div>
+      <div class="leaderboard__row"><span class="rk">09</span><span class="nm">Skinny</span><span class="hd">1,233</span><span class="pl" style="text-align:right;">+18,200</span></div>
+      <div class="leaderboard__row"><span class="rk">10</span><span class="nm">Volt</span><span class="hd">1,012</span><span class="pl" style="text-align:right;">+14,800</span></div>
+    </div>
+  </div>
+</section>
+
 <!-- ==================== TOURNAMENTS ==================== -->
 <section class="shell tournaments" id="tournaments">
   <header class="section-head">
@@ -396,7 +471,7 @@
       <h2 class="section-head__title">Treasury<br/><em>tournaments.</em></h2>
       <p class="section-head__sub">Scheduled freerolls paid out in $HP from the live treasury. Holders skip the line. Late re-entry until break one. Top 15% cash.</p>
     </div>
-    <span class="section-head__num">Ch.&nbsp;04&nbsp;/&nbsp;Schedule</span>
+    <span class="section-head__num">Ch.&nbsp;05&nbsp;/&nbsp;Schedule</span>
   </header>
 
   <!-- LIVE NOW banner -->
@@ -475,12 +550,17 @@
       <h2 class="section-head__title">The&nbsp;loop<br/><em>that pays you.</em></h2>
       <p class="section-head__sub">Creator fees fund the treasury. The treasury funds tournaments. Tournaments pay players. Players hold and trade $HP. Repeat.</p>
     </div>
-    <span class="section-head__num">Ch.&nbsp;05&nbsp;/&nbsp;Mechanics</span>
+    <span class="section-head__num">Ch.&nbsp;06&nbsp;/&nbsp;Mechanics</span>
   </header>
 
   <div class="loop__diagram">
     <div class="loop__node">
       <div>
+        <div class="loop__node-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" stroke-linejoin="miter">
+            <path d="M12 3v14M5 10l7 7 7-7M3 21h18"/>
+          </svg>
+        </div>
         <span class="loop__node-num">— 01 · INFLOW</span>
         <h3 class="loop__node-name">Pump.fun fees</h3>
         <p class="loop__node-desc">Every $HP trade pays creator fees. They route on-chain to the treasury wallet automatically.</p>
@@ -493,6 +573,14 @@
 
     <div class="loop__node loop__node--live">
       <div>
+        <div class="loop__node-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+            <rect x="3" y="5" width="18" height="14" rx="1"/>
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M12 10v4M10 12h4" stroke-width="1.4"/>
+            <path d="M5 19v2M19 19v2"/>
+          </svg>
+        </div>
         <span class="loop__node-num">— 02 · CUSTODY</span>
         <h3 class="loop__node-name">Treasury vault</h3>
         <p class="loop__node-desc">Balance is on-chain, public, verifiable. Holders vote on payout splits and the next prize drop.</p>
@@ -505,6 +593,12 @@
 
     <div class="loop__node">
       <div>
+        <div class="loop__node-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square">
+            <path d="M6 3h12v6a6 6 0 0 1-12 0V3z"/>
+            <path d="M3 5h3M18 5h3M9 21h6M12 15v6"/>
+          </svg>
+        </div>
         <span class="loop__node-num">— 03 · DRAIN</span>
         <h3 class="loop__node-name">Tournaments</h3>
         <p class="loop__node-desc">Scheduled MTTs pay out $HP from the treasury. Top 15% of seats cash. Holders get late-reg windows.</p>
@@ -517,6 +611,12 @@
 
     <div class="loop__node">
       <div>
+        <div class="loop__node-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square">
+            <path d="M3 7h18v10H3z"/>
+            <path d="M3 11h18M16 14h2"/>
+          </svg>
+        </div>
         <span class="loop__node-num">— 04 · OUTFLOW</span>
         <h3 class="loop__node-name">Players cash</h3>
         <p class="loop__node-desc">Winners receive $HP straight to their wallet. They hold, trade, or grind back in. The loop closes.</p>
@@ -536,11 +636,53 @@
       <h2 class="section-head__title">Recent<br/><em>big hands.</em></h2>
       <p class="section-head__sub">Live feed of pots over 50 big-blinds. Tap any row to play the auto-rendered clip.</p>
     </div>
-    <span class="section-head__num">Ch.&nbsp;06&nbsp;/&nbsp;Live</span>
+    <span class="section-head__num">Ch.&nbsp;07&nbsp;/&nbsp;Live</span>
   </header>
 
   <div class="wins__list" id="wins-list">
     <!-- rows injected by JS -->
+  </div>
+</section>
+
+<!-- ==================== FAQ ==================== -->
+<section class="shell faq" id="faq">
+  <header class="section-head">
+    <div class="section-head__left">
+      <h2 class="section-head__title">Things<br/><em>you'll ask.</em></h2>
+      <p class="section-head__sub">Short answers. Click any question.</p>
+    </div>
+    <span class="section-head__num">Ch.&nbsp;08&nbsp;/&nbsp;FAQ</span>
+  </header>
+
+  <div class="faq__list">
+    <div class="faq__item">
+      <button class="faq__q">Is this real-money poker? <span class="faq__sign">+</span></button>
+      <div class="faq__a"><div class="faq__a-inner">No. Hyper Poker is <em>free-to-play</em>. Cash tables and tournaments use site chips you can't sell. Tournament prize pools are paid in $HP from the treasury — token, not chips. We may add token-stake tables later for verified holders in jurisdictions where it's permitted.</div></div>
+    </div>
+    <div class="faq__item">
+      <button class="faq__q">Where does the prize money actually come from? <span class="faq__sign">+</span></button>
+      <div class="faq__a"><div class="faq__a-inner">Pump.fun routes a creator-fee share to the treasury wallet on every $HP trade. Treasury balance is on-chain and public. Scheduled tournaments drain it as prize pools — that's the whole loop.</div></div>
+    </div>
+    <div class="faq__item">
+      <button class="faq__q">How do I prove a hand wasn't rigged? <span class="faq__sign">+</span></button>
+      <div class="faq__a"><div class="faq__a-inner">Every hand has a URL like <em>hyperpoker.gg/h/0x8a2f…</em>. The page shows the server seed commit (locked before the deal), the player entropy mix, and the post-river seed reveal. You can re-derive the deck yourself with the open-source verifier.</div></div>
+    </div>
+    <div class="faq__item">
+      <button class="faq__q">What do I get for holding $HP? <span class="faq__sign">+</span></button>
+      <div class="faq__a"><div class="faq__a-inner">5× daily chip drops, no waitlist on tournaments, late-reg windows, the holders-only Whale Room (1K/2K stakes), animated emotes, custom avatar frames, and voting rights on prize-pool splits. Threshold is currently <em>≥ 100K $HP</em>.</div></div>
+    </div>
+    <div class="faq__item">
+      <button class="faq__q">Do I need a wallet to play? <span class="faq__sign">+</span></button>
+      <div class="faq__a"><div class="faq__a-inner">No. Standard play is wallet-less, just chips. Connect a Solana wallet only if you want holder perks or to claim tournament payouts. We never custody your $HP.</div></div>
+    </div>
+    <div class="faq__item">
+      <button class="faq__q">How are bot opponents tuned? <span class="faq__sign">+</span></button>
+      <div class="faq__a"><div class="faq__a-inner">Four difficulties — weak-tight, tight-aggressive, GTO-approximation, and unhinged. The GTO bot uses a precomputed strategy table for common preflop spots and a small CFR solver for postflop ranges. Unhinged is a deliberately exploitable maniac — fun, not optimal.</div></div>
+    </div>
+    <div class="faq__item">
+      <button class="faq__q">Can my hand be replayed? <span class="faq__sign">+</span></button>
+      <div class="faq__a"><div class="faq__a-inner">Any pot you win over 50 big-blinds is auto-rendered as a 12-second cinematic clip. Share to X / TG / Discord in one tap. Smaller pots can be replayed inline anytime from the hand log.</div></div>
+    </div>
   </div>
 </section>
 

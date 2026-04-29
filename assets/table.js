@@ -245,6 +245,51 @@
       ],
       { duration: 1600, easing: 'cubic-bezier(0.16, 1, 0.3, 1)' }
     );
+    rainConfetti();
+    boom();
+  }
+
+  function rainConfetti() {
+    const variants = ['', 'gold', 'neon'];
+    const N = 80;
+    for (let i = 0; i < N; i++) {
+      const c = document.createElement('div');
+      c.className = `confetti-piece ${variants[i % 3]}`;
+      const x = Math.random() * window.innerWidth;
+      const drift = (Math.random() - 0.5) * 220;
+      const dur = 1800 + Math.random() * 1600;
+      const delay = Math.random() * 400;
+      const rot = Math.random() * 720 - 360;
+      const sz = 8 + Math.random() * 10;
+      c.style.left = x + 'px';
+      c.style.width = sz + 'px';
+      c.style.height = sz + 'px';
+      document.body.appendChild(c);
+      c.animate(
+        [
+          { transform: `translate(0, 0) rotate(0)`,                               opacity: 1 },
+          { transform: `translate(${drift}px, ${window.innerHeight + 60}px) rotate(${rot}deg)`, opacity: 0.9 },
+        ],
+        { duration: dur, delay, easing: 'cubic-bezier(0.4, 0, 0.6, 1)', fill: 'forwards' }
+      );
+      setTimeout(() => c.remove(), dur + delay + 50);
+    }
+  }
+
+  function boom() {
+    // big bass thump on showdown win
+    const ctx = ac();
+    const t = ctx.currentTime;
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.type = 'sine';
+    o.frequency.setValueAtTime(180, t);
+    o.frequency.exponentialRampToValueAtTime(28, t + 0.6);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(0.6, t + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.7);
+    o.connect(g).connect(ctx.destination);
+    o.start(t); o.stop(t + 0.72);
   }
 
   // ----------------------------------------------------------------------
@@ -305,6 +350,50 @@
       tab.classList.add('active');
     });
   });
+
+  // ----------------------------------------------------------------------
+  //  EMOTE RAIL — bubble drifts up from your hero seat
+  // ----------------------------------------------------------------------
+  const emoteToggle = document.getElementById('emote-toggle');
+  const emoteRail = document.getElementById('emote-rail');
+
+  if (emoteToggle && emoteRail) {
+    emoteToggle.addEventListener('click', () => {
+      emoteRail.classList.toggle('is-open');
+    });
+    emoteRail.querySelectorAll('button').forEach((b) => {
+      b.addEventListener('click', () => {
+        sendEmote(b.dataset.emote);
+        emoteRail.classList.remove('is-open');
+      });
+    });
+  }
+
+  function sendEmote(glyph) {
+    const heroSeat = document.querySelector('.hero-seat');
+    if (!heroSeat) return;
+    const rect = heroSeat.getBoundingClientRect();
+    const bubble = document.createElement('div');
+    bubble.className = 'emote-bubble';
+    bubble.textContent = glyph;
+    bubble.style.left = (rect.left + rect.width / 2 - 16) + 'px';
+    bubble.style.top  = (rect.top - 30) + 'px';
+    document.body.appendChild(bubble);
+    setTimeout(() => bubble.remove(), 1900);
+
+    // tiny click sfx
+    const ctx = ac();
+    const t = ctx.currentTime;
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.type = 'triangle';
+    o.frequency.value = 720;
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(0.12, t + 0.005);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.12);
+    o.connect(g).connect(ctx.destination);
+    o.start(t); o.stop(t + 0.13);
+  }
 
   // ----------------------------------------------------------------------
   //  ACTION TIMER on active opponent (cosmetic)

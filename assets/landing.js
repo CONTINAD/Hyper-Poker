@@ -284,6 +284,87 @@
   if (modal) modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
 
+  // --- Leaderboard reset countdown --------------------------------------
+  const lbReset = document.getElementById('lb-reset');
+  if (lbReset) {
+    const t = new Date();
+    const daysAhead = (7 - t.getUTCDay()) % 7 || 7;
+    t.setUTCDate(t.getUTCDate() + daysAhead);
+    t.setUTCHours(0, 0, 0, 0);
+    setInterval(() => {
+      lbReset.textContent = fmtCountdown(t.getTime() - Date.now(), true);
+    }, 1000);
+  }
+
+  // --- Terminal typing animation (provably-fair) ------------------------
+  const term = document.querySelector('.proof__terminal');
+  if (term && 'IntersectionObserver' in window) {
+    const original = term.innerHTML;
+    term.dataset.original = original;
+    term.innerHTML = '';
+
+    const typeIn = () => {
+      // Strip the original into segments — type plain text, paste tags
+      term.innerHTML = original;
+      // animate via clip-path on the parent — simpler + faster
+      term.style.clipPath = 'inset(0 100% 0 0)';
+      term.animate(
+        [{ clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 0 0 0)' }],
+        { duration: 1800, easing: 'steps(60)', fill: 'forwards' }
+      );
+      term.style.clipPath = 'inset(0 0 0 0)';
+    };
+
+    const tObs = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) {
+          typeIn();
+          tObs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.4 });
+    tObs.observe(term);
+  }
+
+  // --- Counter count-up on scroll into view -----------------------------
+  if ('IntersectionObserver' in window) {
+    const upTargets = [
+      { el: document.getElementById('vault-amount'), to: 418294.31, decimals: 2 },
+      { el: document.getElementById('lt-pool'),      to: 2400,      decimals: 0 },
+    ];
+    const cObs = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (!e.isIntersecting) return;
+        const target = upTargets.find((t) => t.el === e.target);
+        if (!target) return;
+        const start = performance.now();
+        const dur = 1400;
+        const from = 0;
+        const tick = (now) => {
+          const p = Math.min(1, (now - start) / dur);
+          const eased = 1 - Math.pow(1 - p, 3);
+          const v = from + (target.to - from) * eased;
+          target.el.textContent = v.toLocaleString('en-US', { minimumFractionDigits: target.decimals, maximumFractionDigits: target.decimals });
+          if (p < 1) requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+        cObs.unobserve(target.el);
+      });
+    }, { threshold: 0.4 });
+    upTargets.forEach((t) => { if (t.el) cObs.observe(t.el); });
+  }
+
+  // --- FAQ accordion ----------------------------------------------------
+  document.querySelectorAll('.faq__q').forEach((q) => {
+    q.addEventListener('click', () => {
+      const item = q.closest('.faq__item');
+      if (!item) return;
+      const wasOpen = item.classList.contains('is-open');
+      document.querySelectorAll('.faq__item').forEach((i) => i.classList.remove('is-open'));
+      if (!wasOpen) item.classList.add('is-open');
+    });
+  });
+
   // --- Boot transition on table-bound clicks ----------------------------
   const overlay = document.getElementById('boot-overlay');
   document.querySelectorAll('a[href="table.html"]').forEach((a) => {
