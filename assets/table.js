@@ -133,7 +133,12 @@
       committed: SB + BB,
     };
 
+    setPositions();
     renderAll();
+    // visible blind chip stacks
+    renderBetStack(everyone[sbIdx]);
+    renderBetStack(everyone[bbIdx]);
+
     log('DEALER', `Hand <em>#${handNum}</em> · seed ${String(seed).slice(-6)} · BB ${BB}`);
     log('DEALER', `posts SB ${SB} (${everyone[sbIdx].name}), BB ${BB} (${everyone[bbIdx].name})`);
 
@@ -148,21 +153,72 @@
       state.toAct = (state.toAct + 1) % state.everyone.length;
       return nextAct();
     }
-    // round complete?
-    if (roundComplete()) {
-      advanceStreet();
-      return;
-    }
+    if (roundComplete()) { advanceStreet(); return; }
     if (p.id === 'you') {
-      // wait for human input via action buttons
       setHeroToAct(true);
+      startTimer(p, 'you');
     } else {
       setHeroToAct(false);
       setActiveSeat(p.id);
-      // bot decides after a small delay
-      const delay = 700 + Math.random() * 900;
-      setTimeout(() => doBotAction(p), delay);
+      showThinking(p.id, true);
+      const delay = 1100 + Math.random() * 1400;
+      startTimer(p, p.id, delay / 1000);
+      setTimeout(() => {
+        showThinking(p.id, false);
+        doBotAction(p);
+      }, delay);
     }
+  }
+
+  // ----- thinking dots -----
+  function showThinking(id, on) {
+    const seat = id === 'you'
+      ? document.querySelector('.hero-seat')
+      : document.querySelector(`.seat[data-pos="${SEATS.find((s) => s.id === id)?.pos}"]`);
+    if (!seat) return;
+    seat.querySelector('.thinking-tag')?.remove();
+    if (on) {
+      const t = document.createElement('div');
+      t.className = 'thinking-tag';
+      t.innerHTML = `Thinking<span class="dot"></span><span class="dot"></span><span class="dot"></span>`;
+      seat.appendChild(t);
+    }
+  }
+
+  // ----- depleting action timer ring -----
+  let timerInterval = null;
+  function startTimer(p, id, durationSec = 14) {
+    const seat = id === 'you'
+      ? document.querySelector('.hero-seat__info')?.parentElement
+      : document.querySelector(`.seat[data-pos="${SEATS.find((s) => s.id === id)?.pos}"]`);
+    if (!seat) return;
+    if (timerInterval) clearInterval(timerInterval);
+    seat.querySelector('.timer-ring')?.remove();
+    const r = 30;
+    const C = 2 * Math.PI * r;
+    const ring = document.createElement('div');
+    ring.className = 'timer-ring';
+    ring.innerHTML = `
+      <svg viewBox="0 0 70 70">
+        <circle class="track" cx="35" cy="35" r="${r}"/>
+        <circle class="fill"  cx="35" cy="35" r="${r}" stroke-dasharray="${C}" stroke-dashoffset="0"/>
+      </svg>`;
+    // attach to avatar so position is right
+    const avatar = seat.querySelector('.seat__avatar');
+    if (avatar) avatar.appendChild(ring);
+    else seat.appendChild(ring);
+    const fill = ring.querySelector('.fill');
+    let elapsed = 0;
+    timerInterval = setInterval(() => {
+      elapsed += 1;
+      const pct = Math.max(0, (durationSec - elapsed) / durationSec);
+      fill.style.strokeDashoffset = String(C * (1 - pct));
+      if (elapsed >= durationSec) clearInterval(timerInterval);
+    }, 1000);
+  }
+  function clearTimerRing() {
+    document.querySelectorAll('.timer-ring').forEach((r) => r.remove());
+    if (timerInterval) clearInterval(timerInterval);
   }
 
   function roundComplete() {
@@ -195,12 +251,15 @@
   }
 
   function applyAction(p, action, amount) {
+    clearTimerRing();
+    showThinking(p.id, false);
     state.streetActed.add(p.id);
     if (action === 'fold') {
       p.folded = true;
       p.lastAction = 'folded';
       log(p.name === 'You' ? 'YOU' : p.name, 'folds');
       flashSeat(p.id, 'fold');
+      if (p.id !== 'you') botChatChance(p, 'fold');
     } else if (action === 'check') {
       p.lastAction = 'checked';
       log(p.name === 'You' ? 'YOU' : p.name, 'checks');
@@ -216,7 +275,7 @@
       p.lastAction = `called ${pay}`;
       log(p.name === 'You' ? 'YOU' : p.name, `calls <em>${pay}</em>`);
       flashSeat(p.id, 'call');
-      flyChips(p.id, 2 + Math.floor(pay / 200));
+      renderBetStack(p);
       chipClick();
     } else if (action === 'raise') {
       const target = Math.max(state.minRaise, amount || state.currentBet * 2);
@@ -231,12 +290,11 @@
       state.minRaise = Math.max(state.minRaise, raiseSize);
       state.currentBet = p.bet;
       state.lastAggressor = state.everyone.indexOf(p);
-      // raising re-opens the round for everyone else
       state.streetActed = new Set([p.id]);
       p.lastAction = `raised to ${p.bet}`;
       log(p.name === 'You' ? 'YOU' : p.name, `raises to <em>${p.bet}</em>`);
       flashSeat(p.id, 'raise');
-      flyChips(p.id, 3 + Math.floor(p.bet / 400));
+      renderBetStack(p);
       chipClick(); setTimeout(chipClick, 80);
     }
     renderAll();
@@ -247,16 +305,21 @@
 
   function advanceStreet() {
     if (handIsOver()) {
-      // single survivor wins the pot
       const winner = state.everyone.find((p) => !p.folded);
-      awardPot([winner], 'last man standing');
+      sweepBetsToPot(() => awardPot([winner], 'last man standing'));
       return;
     }
-    // collect bets — already in pot; reset
-    state.everyone.forEach((p) => { p.bet = 0; });
-    state.currentBet = 0;
-    state.minRaise = BB;
-    state.streetActed = new Set();
+    // sweep bet stacks visually to the pot, THEN reset
+    sweepBetsToPot(() => {
+      state.everyone.forEach((p) => { p.bet = 0; });
+      state.currentBet = 0;
+      state.minRaise = BB;
+      state.streetActed = new Set();
+      proceedStreet();
+    });
+  }
+
+  function proceedStreet() {
 
     if (state.street === 'pre') {
       state.street = 'flop';
@@ -286,27 +349,80 @@
     state.toAct = idx;
 
     renderAll();
-    setTimeout(nextAct, 700);
+    setTimeout(nextAct, 800);
   }
 
   function showdown() {
     const live = state.everyone.filter((p) => !p.folded);
-    // reveal opponents' hole cards for showdown
-    live.forEach((p) => {
-      if (p.id !== 'you') p.reveal = true;
-    });
-    // evaluate each
     const evals = live.map((p) => ({ p, e: HPPoker.evaluate([...p.hole, ...state.board]) }));
     evals.sort((a, b) => HPPoker.compare(b.e, a.e));
-    // group winners
     const winners = [evals[0].p];
     for (let i = 1; i < evals.length; i++) {
       if (HPPoker.compare(evals[i].e, evals[0].e) === 0) winners.push(evals[i].p);
       else break;
     }
     const winnerEval = evals[0].e;
-    log('DEALER', `showdown · ${live.map((p) => `${p.name}: ${HPPoker.evaluate([...p.hole, ...state.board]).name}`).join(' · ')}`);
-    awardPot(winners, winnerEval.name);
+    log('DEALER', `showdown`);
+
+    // cinematic reveal — opponents flip one at a time
+    const opponents = live.filter((p) => p.id !== 'you');
+    let i = 0;
+    const reveal = () => {
+      if (i >= opponents.length) {
+        // reveal hero's hand name banner, then award
+        const heroName = HPPoker.evaluate([...state.hero.hole, ...state.board]).name;
+        const winNames = winners.map((w) => w.name === 'You' ? 'YOU' : w.name).join(' & ');
+        showBanner(`${winNames} wins`, winnerEval.name);
+        setTimeout(() => awardPot(winners, winnerEval.name), 1400);
+        return;
+      }
+      const p = opponents[i];
+      p.reveal = true;
+      log(p.name, `shows · ${formatCards(p.hole)} · <em>${HPPoker.evaluate([...p.hole, ...state.board]).name}</em>`);
+      cardFlip();
+      renderSeats();
+      i++;
+      setTimeout(reveal, 700);
+    };
+    setTimeout(reveal, 500);
+  }
+
+  function showBanner(top, hand) {
+    const felt = document.getElementById('felt');
+    if (!felt) return;
+    document.querySelectorAll('.hand-banner').forEach((b) => b.remove());
+    const b = document.createElement('div');
+    b.className = 'hand-banner';
+    b.innerHTML = `
+      <div class="hand-banner__name">${top}</div>
+      <div class="hand-banner__hand"><em>${hand}</em></div>
+    `;
+    felt.appendChild(b);
+    setTimeout(() => b.remove(), 3500);
+  }
+
+  function botChatChance(p, kind) {
+    // kind: 'win' | 'lose' | 'fold'
+    const chances = { win: 0.35, lose: 0.18, fold: 0.06 };
+    if (Math.random() > (chances[kind] || 0)) return;
+    const lines = {
+      win:  ['gg', 'easy', 'whew', 'sorry', 'nh', '🔥', '🎩'],
+      lose: ['nh', 'gg', 'wp', '😤', '💀'],
+      fold: ['🤡', 'meh', 'fold'],
+    }[kind] || [];
+    const line = lines[Math.floor(Math.random() * lines.length)];
+    setTimeout(() => addBotChat(p, line), 400 + Math.random() * 800);
+  }
+  function addBotChat(p, text) {
+    const list = document.getElementById('chat-list');
+    if (!list) return;
+    const isEmote = /^[\p{Extended_Pictographic}\s]+$/u.test(text);
+    const initials = (p.name || '??').slice(0, 2).toUpperCase();
+    const row = document.createElement('div');
+    row.className = 'chat-msg';
+    row.innerHTML = `<div class="chat-msg__avatar">${initials}</div><div class="chat-msg__body"><div class="chat-msg__name">${p.name} · just now</div><div class="chat-msg__text ${isEmote ? 'emote' : ''}">${text}</div></div>`;
+    list.appendChild(row);
+    list.scrollTop = list.scrollHeight;
   }
 
   function awardPot(winners, reason) {
@@ -314,22 +430,37 @@
     winners.forEach((w) => {
       w.stack += split;
       log(w.name === 'You' ? 'YOU' : w.name, `wins <em>+${split}</em> · <span style="color:var(--neon)">${reason}</span>`);
+      if (w.id !== 'you') botChatChance(w, 'win');
     });
+    // losers occasionally chat
+    state.everyone.forEach((p) => {
+      if (!winners.includes(p) && !p.folded && p.id !== 'you') botChatChance(p, 'lose');
+    });
+    showWinPop(`+${split.toLocaleString()}`);
     if (winners.some((w) => w.id === 'you')) {
       flashWinFelt();
       rainConfetti();
       boom();
+    } else {
+      thump();
     }
-    // persist hero stack
     localStorage.setItem('hp-stack', String(state.hero.stack));
     state.pot = 0;
     renderAll();
-    // schedule new hand
     setTimeout(() => {
-      // remove busted bots? for prototype: top them up
       state.everyone.forEach((p) => { if (p.stack < BB * 4) p.stack = Math.max(p.stack, 4000); });
       newHand();
-    }, 4500);
+    }, 4800);
+  }
+
+  function showWinPop(text) {
+    const felt = document.getElementById('felt');
+    if (!felt) return;
+    const p = document.createElement('div');
+    p.className = 'win-pop';
+    p.textContent = text;
+    felt.appendChild(p);
+    setTimeout(() => p.remove(), 1900);
   }
 
   // ----------------------------------------------------------------------
@@ -350,6 +481,77 @@
     state.hero.hole.forEach((c) => el.appendChild(HPCard.render(c)));
   }
 
+  // ----- bet stack visualization (chips in front of seat) -----
+  function renderBetStack(p) {
+    const stackEl = ensureBetStack(p);
+    if (!stackEl) return;
+    if (p.bet > 0) {
+      stackEl.style.display = 'flex';
+      stackEl.innerHTML = `<span class="bet-stack__chip"></span> ${p.bet.toLocaleString()}`;
+    } else {
+      stackEl.style.display = 'none';
+    }
+  }
+  function ensureBetStack(p) {
+    let host;
+    if (p.id === 'you') host = document.querySelector('.hero-seat');
+    else host = document.querySelector(`.seat[data-pos="${SEATS.find((s) => s.id === p.id)?.pos}"]`);
+    if (!host) return null;
+    let el = host.querySelector('.bet-stack');
+    if (!el) {
+      el = document.createElement('div');
+      el.className = 'bet-stack';
+      // position varies by seat location
+      const pos = p.id === 'you' ? 'hero' : SEATS.find((s) => s.id === p.id)?.pos;
+      const placement = {
+        hero: { bottom: '92%', left: '50%', transform: 'translateX(-50%)' },
+        top:  { top: '92%', left: '50%', transform: 'translateX(-50%)' },
+        tl:   { top: '92%', left: '20%' },
+        tr:   { top: '92%', right: '20%' },
+        ml:   { left: '92%', top: '50%', transform: 'translateY(-50%)' },
+        mr:   { right: '92%', top: '50%', transform: 'translateY(-50%)' },
+      }[pos];
+      Object.assign(el.style, placement || {});
+      host.appendChild(el);
+    }
+    return el;
+  }
+
+  function sweepBetsToPot(then) {
+    // animate every visible bet stack to the pot center, then run callback
+    const pot = document.querySelector('.pot')?.getBoundingClientRect();
+    const stacks = document.querySelectorAll('.bet-stack');
+    if (!pot || stacks.length === 0) { then && then(); return; }
+    let pending = stacks.length;
+    stacks.forEach((s) => {
+      if (s.style.display === 'none') { pending--; if (!pending) then && then(); return; }
+      const rect = s.getBoundingClientRect();
+      const dx = (pot.left + pot.width / 2) - (rect.left + rect.width / 2);
+      const dy = (pot.top + pot.height / 2) - (rect.top + rect.height / 2);
+      s.style.setProperty('--dx', dx + 'px');
+      s.style.setProperty('--dy', dy + 'px');
+      s.style.animation = 'betSweep 0.55s cubic-bezier(0.16, 1, 0.3, 1) forwards';
+      setTimeout(() => {
+        s.remove();
+        pending--;
+        if (!pending) then && then();
+      }, 580);
+    });
+    chipClick(); setTimeout(chipClick, 90);
+  }
+
+  // ----- position labels (UTG / MP / CO / BTN / SB / BB) -----
+  function setPositions() {
+    const N = state.everyone.length;
+    // standard 6-handed labels by offset from button
+    // 0=BTN, 1=SB, 2=BB, 3=UTG, 4=MP / HJ, 5=CO
+    const POS_LABELS = ['BTN','SB','BB','UTG','MP','CO'];
+    state.everyone.forEach((p, idx) => {
+      const offset = ((idx - state.btnIdx) + N) % N;
+      p.position = POS_LABELS[offset] || '';
+    });
+  }
+
   function renderSeats() {
     const seatEls = {
       sk: document.querySelector('.seat[data-pos="top"]'),
@@ -362,9 +564,21 @@
       const el = seatEls[p.id];
       if (!el) return;
       el.classList.toggle('seat--folded', p.folded);
-      // remove the static action-tag from old markup (engine drives seat__bet now)
       const stale = el.querySelector('.seat__action-tag');
       if (stale) stale.remove();
+
+      // position chip
+      let pc = el.querySelector('.pos-chip');
+      if (!pc) { pc = document.createElement('div'); pc.className = 'pos-chip'; el.appendChild(pc); }
+      pc.textContent = p.position || '';
+      pc.dataset.pos = p.position || '';
+
+      // online dot
+      if (!el.querySelector('.seat__online')) {
+        const dot = document.createElement('div');
+        dot.className = 'seat__online';
+        el.appendChild(dot);
+      }
       const stackEl = el.querySelector('.seat__stack');
       if (stackEl) stackEl.innerHTML = `${p.stack.toLocaleString()} <span class="unit">CHIPS</span>`;
       const betEl = el.querySelector('.seat__bet');
@@ -435,12 +649,18 @@
   function setHeroToAct(yes) {
     document.querySelectorAll('.action-buttons .btn').forEach((b) => {
       b.disabled = !yes;
-      b.style.opacity = yes ? '1' : '0.45';
     });
-    document.getElementById('bet-range').disabled = !yes;
+    const range = document.getElementById('bet-range');
+    const inp = document.getElementById('bet-input');
+    if (range) range.disabled = !yes;
+    if (inp) inp.disabled = !yes;
+    document.querySelector('.action-bar')?.classList.toggle('is-active', yes);
     if (yes) {
-      const heroSeat = document.querySelector('.hero-seat__info');
-      if (heroSeat) heroSeat.classList.add('is-acting');
+      // can the hero raise at all? if call would put them all-in, disable raise
+      const toCall = state.currentBet - state.hero.bet;
+      const canRaise = state.hero.stack > toCall;
+      const raiseBtn = document.getElementById('btn-raise');
+      if (raiseBtn) raiseBtn.disabled = !canRaise;
     }
   }
   function setActiveSeat(id) {
@@ -577,12 +797,18 @@
     const min = +range.min, max = +range.max;
     v = Math.max(min, Math.min(max, Math.round(v / 25) * 25));
     range.value = v;
-    if (betAmount) betAmount.textContent = v.toLocaleString();
+    const inp = document.getElementById('bet-input');
+    if (inp && document.activeElement !== inp) inp.value = v;
     if (raiseAmount) raiseAmount.textContent = v.toLocaleString();
     const pct = ((v - min) / Math.max(1, (max - min))) * 100;
     range.style.setProperty('--val', pct + '%');
   }
+  const betInput = document.getElementById('bet-input');
   if (range) range.addEventListener('input', (e) => updateBet(+e.target.value));
+  if (betInput) {
+    betInput.addEventListener('input', (e) => updateBet(+e.target.value));
+    betInput.addEventListener('blur', () => updateBet(+betInput.value));
+  }
   document.querySelectorAll('.bet-presets button').forEach((b) => {
     b.addEventListener('click', () => {
       const pct = +b.dataset.pct;

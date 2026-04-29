@@ -235,16 +235,16 @@
   <footer class="action-bar">
     <div class="bet-slider">
       <span class="bet-slider__label">Bet</span>
-      <input type="range" id="bet-range" min="400" max="9950" value="1200" />
-      <div class="bet-slider__amount"><span id="bet-amount">1,200</span><span class="unit">CHIPS</span></div>
+      <input type="range" id="bet-range" min="100" max="9950" value="200" step="25" />
+      <input type="number" id="bet-input" class="bet-input" value="200" min="100" max="9950" step="25" aria-label="Bet amount" />
     </div>
 
     <div class="bet-presets">
-      <button data-pct="33">33%</button>
-      <button data-pct="50">50%</button>
-      <button data-pct="75">75%</button>
-      <button data-pct="100">POT</button>
-      <button data-pct="200">ALL-IN</button>
+      <button data-pct="25">¼ pot</button>
+      <button data-pct="50">½ pot</button>
+      <button data-pct="75">¾ pot</button>
+      <button data-pct="100">Pot</button>
+      <button data-pct="200">All-in</button>
     </div>
 
     <div class="action-buttons">

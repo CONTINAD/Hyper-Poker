@@ -1449,6 +1449,192 @@ body.fourcolor .card[data-suit="c"] { color: #1c8a3e; }
   background: var(--ink-3); color: var(--bone-2); border:1px solid rgba(244,236,223,0.12);
 }
 
+/* ---- bet stack in front of each seat ----------------------- */
+.bet-stack {
+  position: absolute;
+  display: flex; align-items: center; gap: 6px;
+  padding: 4px 8px;
+  background: rgba(10,8,7,0.85);
+  border: 1px solid rgba(255,45,111,0.3);
+  border-radius: 999px;
+  z-index: 4;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--ember);
+  white-space: nowrap;
+  pointer-events: none;
+  animation: betPop .3s var(--ease-out);
+  backdrop-filter: blur(4px);
+}
+.bet-stack__chip {
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: repeating-conic-gradient(from 0deg, var(--ember) 0 36deg, var(--bone) 36deg 72deg);
+  box-shadow: 0 0 0 1px var(--ink-3), 0 1px 0 #931039;
+  flex-shrink: 0;
+}
+@keyframes betPop {
+  0%   { opacity: 0; transform: scale(0.6); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@keyframes betSweep {
+  to { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0.4); }
+}
+
+/* ---- position chip (UTG / MP / CO / BTN / SB / BB) --------- */
+.pos-chip {
+  position: absolute;
+  top: -8px; left: -8px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+  padding: 3px 6px;
+  background: var(--ink);
+  color: var(--bone-2);
+  border: 1px solid rgba(244,236,223,0.2);
+  border-radius: 2px;
+  z-index: 6;
+}
+.pos-chip[data-pos="BTN"] { background: var(--bone); color: var(--blood); border-color: var(--bone); }
+.pos-chip[data-pos="SB"], .pos-chip[data-pos="BB"] { color: var(--ember); border-color: rgba(255,45,111,0.4); }
+
+/* ---- thinking dots tag ------------------------------------- */
+.thinking-tag {
+  position: absolute;
+  top: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--ink-3);
+  border: 1px solid rgba(244,236,223,0.15);
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--bone-2);
+  z-index: 7;
+  white-space: nowrap;
+}
+.thinking-tag .dot {
+  display: inline-block;
+  width: 3px; height: 3px;
+  border-radius: 50%;
+  background: var(--ember);
+  margin-left: 2px;
+  animation: thinkDot 1.2s infinite;
+}
+.thinking-tag .dot:nth-child(2) { animation-delay: 0.15s; }
+.thinking-tag .dot:nth-child(3) { animation-delay: 0.3s; }
+@keyframes thinkDot {
+  0%, 100% { opacity: 0.3; transform: translateY(0); }
+  50%      { opacity: 1; transform: translateY(-2px); }
+}
+
+/* ---- depleting action-timer ring around active avatar ------- */
+.timer-ring {
+  position: absolute;
+  inset: -6px;
+  pointer-events: none;
+  z-index: 5;
+}
+.timer-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.timer-ring circle { fill: none; stroke-width: 2.5; }
+.timer-ring .track { stroke: rgba(244,236,223,0.1); }
+.timer-ring .fill {
+  stroke: var(--ember);
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s linear, stroke 0.3s;
+  filter: drop-shadow(0 0 6px var(--ember));
+}
+.seat.is-pressure .timer-ring .fill { stroke: var(--ember-2); }
+
+/* ---- live online dot per seat ------------------------------- */
+.seat__online {
+  position: absolute;
+  top: 4px; right: 4px;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--neon);
+  box-shadow: 0 0 6px rgba(0,229,199,0.7);
+  z-index: 6;
+}
+.seat--folded .seat__online { background: var(--bone-3); box-shadow: none; }
+
+/* ---- win amount float-up over pot --------------------------- */
+.win-pop {
+  position: absolute;
+  left: 50%;
+  top: 56%;
+  transform: translateX(-50%);
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 56px;
+  letter-spacing: -0.04em;
+  color: var(--gold);
+  text-shadow: 0 0 30px rgba(230,180,80,0.8);
+  z-index: 10;
+  pointer-events: none;
+  animation: winPop 1.8s var(--ease-out) forwards;
+}
+@keyframes winPop {
+  0%   { opacity: 0; transform: translateX(-50%) scale(0.5); }
+  20%  { opacity: 1; transform: translateX(-50%) scale(1.15); }
+  60%  { opacity: 1; transform: translateX(-50%) scale(1) translateY(0); }
+  100% { opacity: 0; transform: translateX(-50%) scale(0.95) translateY(-80px); }
+}
+
+/* ---- showdown banner mid-felt ------------------------------- */
+.hand-banner {
+  position: absolute;
+  left: 50%;
+  top: 38%;
+  transform: translate(-50%, -50%);
+  background: linear-gradient(180deg, rgba(10,8,7,0.95), rgba(17,13,11,0.98));
+  border: 1px solid rgba(255,45,111,0.4);
+  padding: 12px 24px;
+  z-index: 12;
+  text-align: center;
+  border-radius: 4px;
+  pointer-events: none;
+  animation: bannerIn .5s var(--ease-out);
+  backdrop-filter: blur(8px);
+}
+.hand-banner::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--ember), transparent);
+}
+.hand-banner__name {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--bone-3);
+  margin-bottom: 4px;
+}
+.hand-banner__hand {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 22px;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: var(--bone);
+}
+.hand-banner__hand em {
+  font-family: var(--font-editorial);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--ember);
+  text-transform: none;
+}
+@keyframes bannerIn {
+  from { opacity: 0; transform: translate(-50%, -50%) scale(0.85); }
+  to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
 /* dealer button — pinned to the seat that has has-button class */
 .seat.has-button::after {
   content: 'D';
@@ -1545,8 +1731,43 @@ body.fourcolor .card[data-suit="c"] { color: #1c8a3e; }
 .bet-presets    { grid-area: presets; }
 .action-buttons { grid-area: actions; min-width: 0; }
 
-.action-buttons .btn { flex: 1 1 0; min-width: 0; padding: 14px 12px; }
+.action-buttons .btn { flex: 1 1 0; min-width: 0; padding: 14px 12px; transition: opacity .2s, filter .2s, transform .15s var(--ease-snap); }
 .action-buttons .btn--raise { flex: 1.4 1 0; }
+.action-buttons .btn:disabled, .action-buttons .btn[disabled] {
+  opacity: 0.35;
+  filter: grayscale(0.6);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.action-bar.is-active .action-buttons .btn--raise {
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.15) inset, 0 0 24px rgba(255,45,111,0.5), 0 12px 30px -10px rgba(255,45,111,0.6);
+  animation: ctaBreath 2.4s ease-in-out infinite;
+}
+@keyframes ctaBreath {
+  0%, 100% { box-shadow: 0 0 0 1px rgba(255,255,255,0.15) inset, 0 0 20px rgba(255,45,111,0.4), 0 12px 30px -10px rgba(255,45,111,0.5); }
+  50%      { box-shadow: 0 0 0 1px rgba(255,255,255,0.2)  inset, 0 0 36px rgba(255,45,111,0.7), 0 12px 30px -10px rgba(255,45,111,0.7); }
+}
+
+/* bet input field next to slider */
+.bet-input {
+  width: 90px;
+  padding: 8px 10px;
+  background: var(--ink);
+  border: 1px solid rgba(244,236,223,0.15);
+  border-radius: 2px;
+  color: var(--ember);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: -0.01em;
+  text-align: right;
+  outline: none;
+  transition: border-color .15s;
+  -moz-appearance: textfield;
+}
+.bet-input:focus { border-color: var(--ember); }
+.bet-input::-webkit-outer-spin-button,
+.bet-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 
 @media (max-width: 720px){
   .action-bar { padding: 12px 14px; gap: 10px; }
