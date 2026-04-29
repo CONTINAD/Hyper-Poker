@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Hyper Poker — Table 7 · No-Limit Hold'em</title>
+  <link rel="stylesheet" href="assets/styles.css" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23FF2D6F'/%3E%3Ctext x='16' y='22' text-anchor='middle' font-family='Arial Black' font-size='16' font-weight='900' fill='%230A0807'%3EHP%3C/text%3E%3C/svg%3E" />
+</head>
+<body>
+
+<div class="table-shell">
+
+  <!-- ============== TOP BAR ============== -->
+  <header class="table-top">
+    <div class="table-top__left">
+      <a href="index.html" class="nav__brand" aria-label="Back to lobby">
+        <span class="brand-mark" style="width:28px; height:28px; font-size:13px;">HP</span>
+        <span class="brand-name" style="font-size:14px;">Hyper&nbsp;Poker</span>
+      </a>
+      <span class="table-top__stat"><span class="key">Table</span><span class="val">07 · No-Limit</span></span>
+      <span class="table-top__stat"><span class="key">Blinds</span><span class="val">25 / 50</span></span>
+      <span class="table-top__stat"><span class="key">Hand</span><span class="val">#0x8a2f…b7e9</span></span>
+    </div>
+    <div class="table-top__right">
+      <span class="table-top__stat"><span class="key">Treasury</span><span class="val val--neon">418,294 SOL</span></span>
+      <span class="table-top__stat"><span class="key">Your bag</span><span class="val val--ember">12,400 $HP</span></span>
+      <button class="btn btn--ghost" style="padding:8px 14px;">Sit out</button>
+    </div>
+  </header>
+
+  <!-- ============== STAGE ============== -->
+  <main class="table-stage">
+
+    <div class="felt-wrap scanlines">
+      <div class="felt" id="felt">
+
+        <!-- Community cards -->
+        <div class="board" id="board">
+          <div class="card-slot" data-slot="0"></div>
+          <div class="card-slot" data-slot="1"></div>
+          <div class="card-slot" data-slot="2"></div>
+          <div class="card-slot" data-slot="3"></div>
+          <div class="card-slot" data-slot="4"></div>
+        </div>
+
+        <!-- Pot -->
+        <div class="pot">
+          <div class="pot__chips">
+            <div class="pot-chip"></div>
+            <div class="pot-chip"></div>
+            <div class="pot-chip"></div>
+            <div class="pot-chip"></div>
+          </div>
+          <div class="pot__label">POT</div>
+          <div class="pot__amount"><span id="pot-amount">1,250</span><span class="unit">CHIPS</span></div>
+        </div>
+
+        <!-- ===== seats around the table ===== -->
+        <div class="seat seat--top" data-pos="top">
+          <div class="seat__cards">
+            <div class="mini-back"></div>
+            <div class="mini-back"></div>
+          </div>
+          <div class="seat__avatar">SK</div>
+          <div class="seat__name">Skinny</div>
+          <div class="seat__stack">8,420 <span class="unit">CHIPS</span></div>
+          <div class="seat__bet">— folded</div>
+        </div>
+
+        <div class="seat seat--folded seat--tl" data-pos="tl">
+          <div class="seat__avatar">DG</div>
+          <div class="seat__name">DegenKing</div>
+          <div class="seat__stack">6,100 <span class="unit">CHIPS</span></div>
+          <div class="seat__bet">— folded</div>
+        </div>
+
+        <div class="seat seat--active seat--tr" data-pos="tr">
+          <div class="seat__action-tag">Thinking · 0:14</div>
+          <div class="seat__cards">
+            <div class="mini-back"></div>
+            <div class="mini-back"></div>
+          </div>
+          <div class="seat__avatar">??</div>
+          <div class="seat__name">Aria</div>
+          <div class="seat__stack">14,800 <span class="unit">CHIPS</span></div>
+          <div class="seat__bet">Bet 400</div>
+        </div>
+
+        <div class="seat seat--folded seat--ml" data-pos="ml">
+          <div class="seat__avatar">VL</div>
+          <div class="seat__name">Volt</div>
+          <div class="seat__stack">3,950 <span class="unit">CHIPS</span></div>
+          <div class="seat__bet">— folded</div>
+        </div>
+
+        <div class="seat seat--mr" data-pos="mr">
+          <div class="seat__action-tag seat__action-tag--ghost">Called 400</div>
+          <div class="seat__cards">
+            <div class="mini-back"></div>
+            <div class="mini-back"></div>
+          </div>
+          <div class="seat__avatar">RX</div>
+          <div class="seat__name">Roxy</div>
+          <div class="seat__stack">11,200 <span class="unit">CHIPS</span></div>
+          <div class="seat__bet">Bet 400</div>
+        </div>
+
+        <!-- Dealer button (near hero seat) -->
+        <div class="dealer-btn">D</div>
+
+        <!-- Hero seat (you) -->
+        <div class="hero-seat">
+          <div class="hero-seat__cards" id="hero-cards">
+            <div class="card red">
+              <span class="rank">A</span><span class="suit">♥</span>
+              <span class="center">♥</span>
+              <span class="corner-bl"><span class="rank">A</span><span class="suit">♥</span></span>
+            </div>
+            <div class="card black">
+              <span class="rank">K</span><span class="suit">♠</span>
+              <span class="center">♠</span>
+              <span class="corner-bl"><span class="rank">K</span><span class="suit">♠</span></span>
+            </div>
+          </div>
+          <div class="hero-seat__info">
+            <span class="hero-seat__name">You</span>
+            <span class="hero-seat__stack">9,950 <span class="unit">CHIPS</span></span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ============== RAIL ============== -->
+    <aside class="rail" aria-label="Hand log and chat">
+      <div class="rail__tabs">
+        <button class="rail__tab active" data-tab="log">Log</button>
+        <button class="rail__tab" data-tab="chat">Chat</button>
+        <button class="rail__tab" data-tab="opps">Opps</button>
+      </div>
+      <div class="rail__body">
+        <div class="hand-log" id="hand-log">
+          <div class="row"><span class="t">22:13</span><span class="who">DEALER</span><span class="what">shuffles · seed <em>0x8a2f…</em></span></div>
+          <div class="row"><span class="t">22:13</span><span class="who">DegenKing</span><span class="what">posts SB <em>25</em></span></div>
+          <div class="row"><span class="t">22:13</span><span class="who">Aria</span><span class="what">posts BB <em>50</em></span></div>
+          <div class="row"><span class="t">22:13</span><span class="who">DEALER</span><span class="what">deals hole cards</span></div>
+          <div class="row"><span class="t">22:13</span><span class="who">Volt</span><span class="what">folds</span></div>
+          <div class="row"><span class="t">22:13</span><span class="who">Roxy</span><span class="what">raises to <em>200</em></span></div>
+          <div class="row"><span class="t">22:13</span><span class="who">Skinny</span><span class="what">folds</span></div>
+          <div class="row"><span class="t">22:13</span><span class="who">DegenKing</span><span class="what">folds</span></div>
+          <div class="row"><span class="t">22:13</span><span class="who">YOU</span><span class="what">call <em>200</em> <span style="color:var(--neon);">A♥ K♠</span></span></div>
+          <div class="row"><span class="t">22:13</span><span class="who">Aria</span><span class="what">3-bets to <em>400</em></span></div>
+          <div class="row"><span class="t">22:13</span><span class="who">Roxy</span><span class="what">calls <em>400</em></span></div>
+          <div class="row"><span class="t">22:14</span><span class="who" style="color:var(--ember);">YOU</span><span class="what">to act · pot <em>1,250</em></span></div>
+        </div>
+      </div>
+
+      <div class="share-callout">
+        <h4 class="share-callout__title">Big Hand?<br/>Auto-clip it.</h4>
+        <p class="share-callout__sub">When you take a pot &gt; 50bb, we render a 12-second cinematic replay you can post in one tap.</p>
+        <button class="share-callout__btn">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v8M3 6l3 3 3-3M1 11h10" stroke="currentColor" stroke-width="1.4" stroke-linecap="square"/></svg>
+          Replay last hand
+        </button>
+      </div>
+    </aside>
+
+  </main>
+
+  <!-- ============== ACTION BAR ============== -->
+  <footer class="action-bar">
+    <div class="bet-slider">
+      <span class="bet-slider__label">Bet</span>
+      <input type="range" id="bet-range" min="400" max="9950" value="1200" />
+      <div class="bet-slider__amount"><span id="bet-amount">1,200</span><span class="unit">CHIPS</span></div>
+    </div>
+
+    <div class="bet-presets">
+      <button data-pct="33">33%</button>
+      <button data-pct="50">50%</button>
+      <button data-pct="75">75%</button>
+      <button data-pct="100">POT</button>
+      <button data-pct="200">ALL-IN</button>
+    </div>
+
+    <div class="action-buttons">
+      <button class="btn btn--fold" id="btn-fold">Fold</button>
+      <button class="btn btn--call" id="btn-call">Call <span style="color:var(--bone-3); margin-left:6px;">400</span></button>
+      <button class="btn btn--raise" id="btn-raise">Raise to <span id="raise-amount" style="margin-left:6px;">1,200</span></button>
+    </div>
+  </footer>
+
+</div>
+
+<script src="assets/table.js"></script>
+</body>
+</html>

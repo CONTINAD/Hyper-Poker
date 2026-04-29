@@ -1,0 +1,626 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Hyper Poker — Drain the House.</title>
+  <meta name="description" content="Free-to-play Texas Hold'em, fueled by the $HP treasury. Bots, cash tables, scheduled tournaments with real prize pools. Provably fair. Rigorously degenerate." />
+  <meta name="theme-color" content="#0A0807" />
+  <link rel="stylesheet" href="assets/styles.css" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23FF2D6F'/%3E%3Ctext x='16' y='22' text-anchor='middle' font-family='Arial Black' font-size='16' font-weight='900' fill='%230A0807'%3EHP%3C/text%3E%3C/svg%3E" />
+</head>
+<body>
+
+<!-- ==================== NAV ==================== -->
+<header class="shell">
+  <nav class="nav">
+    <a href="/" class="nav__brand" aria-label="Hyper Poker home">
+      <span class="brand-mark">HP</span>
+      <span class="brand-name">Hyper&nbsp;Poker<span class="ticker">$HP</span></span>
+    </a>
+    <div class="nav__links">
+      <a href="#modes">Play</a>
+      <a href="#treasury">Treasury</a>
+      <a href="#holders">Holders</a>
+      <a href="#fair">Fairness</a>
+      <a href="#tournaments">Tournaments</a>
+    </div>
+    <div class="nav__cta">
+      <button class="nav__hamburger" aria-label="Menu"><span></span></button>
+      <button class="btn btn--ghost">Connect&nbsp;Wallet</button>
+      <a class="btn btn--primary" href="table.html">
+        <span>Sit&nbsp;Down</span>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 7h12M8 2l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="square"/></svg>
+      </a>
+    </div>
+  </nav>
+</header>
+
+<!-- ==================== HERO ==================== -->
+<section class="hero">
+  <div class="shell">
+    <div class="hero__grid">
+      <!-- LEFT: copy -->
+      <div>
+        <div class="eyebrow reveal reveal-1">
+          <span class="dot"></span>
+          <span>Live · Mainnet · v0.1 alpha</span>
+        </div>
+
+        <h1 class="hero__title reveal reveal-2">
+          <span class="block">Drain</span>
+          <span class="block"><em>the</em></span>
+          <span class="block stroke">House.</span>
+        </h1>
+
+        <p class="hero__lede reveal reveal-3">
+          Free-to-play Texas Hold'em fueled by the <strong>$HP treasury</strong>.
+          Every pump.fun creator fee flows in. Tournament winners drain it out.
+        </p>
+
+        <div class="hero__ctas reveal reveal-4">
+          <a class="btn btn--primary btn--lg" href="table.html">
+            <span>Deal&nbsp;me&nbsp;in</span>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 7h12M8 2l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="square"/></svg>
+          </a>
+          <button class="btn btn--mono btn--lg" id="watch-open">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.4"/><path d="M5 4l5 3-5 3V4z" fill="currentColor"/></svg>
+            Watch&nbsp;a&nbsp;hand
+          </button>
+        </div>
+
+        <dl class="hero__meta reveal reveal-5">
+          <div>
+            <dt>Tables online</dt>
+            <dd id="stat-tables">142</dd>
+          </div>
+          <div>
+            <dt>Hands today</dt>
+            <dd id="stat-hands">38,094</dd>
+          </div>
+          <div>
+            <dt>Holders sat</dt>
+            <dd id="stat-holders">1,407</dd>
+          </div>
+        </dl>
+      </div>
+
+      <!-- RIGHT: live treasury vault -->
+      <aside class="vault reveal reveal-3" aria-label="Live treasury balance" id="treasury">
+        <div class="vault__head">
+          <span class="vault__label">$HP Treasury · Mainnet</span>
+          <span class="vault__live">
+            <span class="dot"></span>
+            <span>Live · Sol RPC</span>
+          </span>
+        </div>
+
+        <div class="vault__balance">
+          <span id="vault-amount">418,294.31</span>
+          <span class="unit">SOL</span>
+        </div>
+        <div class="vault__delta">
+          <span id="vault-delta">+184.20 SOL</span> · last 24h
+        </div>
+
+        <div class="vault__chart">
+          <svg viewBox="0 0 320 96" preserveAspectRatio="none" aria-hidden="true">
+            <defs>
+              <linearGradient id="vaultGradient" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0%" stop-color="#FF2D6F" stop-opacity="0.45"/>
+                <stop offset="100%" stop-color="#FF2D6F" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <g class="grid">
+              <line x1="0" y1="24" x2="320" y2="24"/>
+              <line x1="0" y1="48" x2="320" y2="48"/>
+              <line x1="0" y1="72" x2="320" y2="72"/>
+            </g>
+            <path class="area" d="M0,80 L20,72 L40,68 L60,74 L80,60 L100,52 L120,56 L140,40 L160,46 L180,28 L200,32 L220,18 L240,24 L260,14 L280,20 L300,8 L320,12 L320,96 L0,96 Z"/>
+            <path class="line" d="M0,80 L20,72 L40,68 L60,74 L80,60 L100,52 L120,56 L140,40 L160,46 L180,28 L200,32 L220,18 L240,24 L260,14 L280,20 L300,8 L320,12"/>
+            <circle class="pulse" cx="320" cy="12" r="3.5">
+              <animate attributeName="r" values="3;6;3" dur="1.4s" repeatCount="indefinite"/>
+              <animate attributeName="opacity" values="1;0.3;1" dur="1.4s" repeatCount="indefinite"/>
+            </circle>
+          </svg>
+        </div>
+
+        <div class="vault__rows">
+          <div class="vault__row">
+            <span class="key">Inflow · creator fees</span>
+            <span class="val val--pos">+184.20 SOL</span>
+          </div>
+          <div class="vault__row">
+            <span class="key">Drain · last tournament</span>
+            <span class="val val--neg">-2,400.00 SOL</span>
+          </div>
+          <div class="vault__row">
+            <span class="key">Next drain</span>
+            <span class="val" id="next-drain">Friday 22:00 UTC</span>
+          </div>
+          <div class="vault__row">
+            <span class="key">Wallet</span>
+            <span class="val" style="font-size:11px;">7Hp8…wF2u</span>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== MARQUEE ==================== -->
+<div class="marquee" aria-hidden="true">
+  <div class="marquee__track">
+    <span>
+      Free chips daily
+      <span class="dot"></span>
+      <em>provably fair</em>
+      <span class="dot"></span>
+      Bot mode
+      <span class="dot"></span>
+      Cash tables
+      <span class="dot"></span>
+      <em>weekly tournaments</em>
+      <span class="dot"></span>
+      $HP holder perks
+      <span class="dot"></span>
+      Replay clips
+      <span class="dot"></span>
+      <em>drain the house</em>
+      <span class="dot"></span>
+    </span>
+    <span>
+      Free chips daily
+      <span class="dot"></span>
+      <em>provably fair</em>
+      <span class="dot"></span>
+      Bot mode
+      <span class="dot"></span>
+      Cash tables
+      <span class="dot"></span>
+      <em>weekly tournaments</em>
+      <span class="dot"></span>
+      $HP holder perks
+      <span class="dot"></span>
+      Replay clips
+      <span class="dot"></span>
+      <em>drain the house</em>
+      <span class="dot"></span>
+    </span>
+  </div>
+</div>
+
+<!-- ==================== MODES ==================== -->
+<section class="shell modes" id="modes">
+  <header class="section-head">
+    <div class="section-head__left">
+      <h2 class="section-head__title">Three&nbsp;ways<br/><em>to play.</em></h2>
+      <p class="section-head__sub">
+        Practice against bots that learned from a million hands. Sit at cash tables with free chips that reset daily. Or fire into a treasury-funded tournament with real $HP on the line.
+      </p>
+    </div>
+    <span class="section-head__num">Ch.&nbsp;01&nbsp;/&nbsp;Modes</span>
+  </header>
+
+  <div class="modes__grid">
+
+    <article class="mode-card">
+      <div>
+        <span class="mode-card__num">— 01</span>
+        <h3 class="mode-card__title">Solo<br/>vs Bots</h3>
+        <p class="mode-card__desc">Heads-up or 6-max against AI opponents tuned at four difficulties. Weak-tight, tight-aggressive, GTO, and unhinged.</p>
+      </div>
+
+      <div class="mode-card__visual">
+        <div class="fan">
+          <div class="mini-card red"><span class="rank">A</span><span class="suit">♥</span></div>
+          <div class="mini-card black"><span class="rank">K</span><span class="suit">♠</span></div>
+          <div class="mini-card red"><span class="rank">Q</span><span class="suit">♦</span></div>
+        </div>
+      </div>
+
+      <a href="table.html" class="mode-card__cta">
+        <span>Take a seat</span>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 7h12M8 2l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="square"/></svg>
+      </a>
+      <div class="mode-card__signal">
+        <span class="dot"></span>
+        <span><span class="num">4 difficulties</span> · GTO solver</span>
+      </div>
+    </article>
+
+    <article class="mode-card">
+      <div>
+        <span class="mode-card__num">— 02</span>
+        <h3 class="mode-card__title">Cash<br/>Tables</h3>
+        <p class="mode-card__desc">Free-chip rings from 1/2 to 100/200. 9-handed and 6-max. Daily 50K stack drops for $HP holders.</p>
+      </div>
+
+      <div class="mode-card__visual">
+        <div class="chip-stack">
+          <div class="chip"></div>
+          <div class="chip"></div>
+          <div class="chip"></div>
+          <div class="chip"><span class="chip__face">HP</span></div>
+        </div>
+      </div>
+
+      <a href="table.html" class="mode-card__cta">
+        <span>Find a table</span>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 7h12M8 2l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="square"/></svg>
+      </a>
+      <div class="mode-card__signal">
+        <span class="dot"></span>
+        <span><span class="num" id="signal-tables">142 tables</span> · 1,407 seated</span>
+      </div>
+    </article>
+
+    <article class="mode-card">
+      <div>
+        <span class="mode-card__num">— 03</span>
+        <h3 class="mode-card__title">Treasury<br/>Tournaments</h3>
+        <p class="mode-card__desc">Scheduled freeroll MTTs paid out in $HP from the live treasury. Holders skip the line and get reduced re-entry windows.</p>
+      </div>
+
+      <div class="mode-card__visual">
+        <div class="prize">
+          <svg class="prize__crown" width="60" height="32" viewBox="0 0 60 32" fill="none" aria-hidden="true">
+            <path d="M3 28 L8 8 L18 20 L30 4 L42 20 L52 8 L57 28 Z" fill="currentColor" stroke="#8C6A24" stroke-width="1" stroke-linejoin="round"/>
+            <circle cx="8" cy="8" r="2.5" fill="#fff4d6"/>
+            <circle cx="30" cy="4" r="3" fill="#fff4d6"/>
+            <circle cx="52" cy="8" r="2.5" fill="#fff4d6"/>
+            <rect x="2" y="27" width="56" height="3" fill="#8C6A24"/>
+          </svg>
+          <div class="prize__stack">
+            <div class="prize__chip"></div>
+            <div class="prize__chip"></div>
+            <div class="prize__chip"></div>
+            <div class="prize__chip"></div>
+            <div class="prize__chip"></div>
+          </div>
+        </div>
+      </div>
+
+      <a href="#tournaments" class="mode-card__cta">
+        <span>See schedule</span>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 7h12M8 2l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="square"/></svg>
+      </a>
+      <div class="mode-card__signal">
+        <span class="dot"></span>
+        <span>Next drain · <span class="num" id="signal-next">Fri 22:00 UTC</span></span>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<!-- ==================== HOLDERS ==================== -->
+<section class="shell holders" id="holders">
+  <header class="section-head">
+    <div class="section-head__left">
+      <h2 class="section-head__title">Hold&nbsp;the&nbsp;bag,<br/><em>own the room.</em></h2>
+      <p class="section-head__sub">Anyone can play free. $HP holders get larger drops, priority seating, exclusive rooms, and early access to new modes. Wallet-verified, on-chain, no email.</p>
+    </div>
+    <span class="section-head__num">Ch.&nbsp;02&nbsp;/&nbsp;Perks</span>
+  </header>
+
+  <div class="holders__grid">
+    <div class="holders__col holders__col--free">
+      <h3 class="holders__title">Standard</h3>
+      <p class="holders__sub">— Free seat</p>
+      <ul class="holders__list">
+        <li><span class="marker">✓</span><span>10,000 free chips on signup</span></li>
+        <li><span class="marker">✓</span><span>5,000 daily reload (24h cooldown)</span></li>
+        <li><span class="marker">✓</span><span>Bot mode &amp; cash tables, all stakes</span></li>
+        <li><span class="marker">✓</span><span>Open tournament entry (waitlist)</span></li>
+        <li><span class="marker">✓</span><span>Replay clip generator</span></li>
+        <li><span class="marker">✓</span><span>One emote pack</span></li>
+      </ul>
+    </div>
+    <div class="holders__col holders__col--holder">
+      <h3 class="holders__title">$HP Holder</h3>
+      <p class="holders__sub">— ≥ 100K $HP &nbsp;·&nbsp; wallet-verified</p>
+      <ul class="holders__list">
+        <li><span class="marker">+</span><span><strong>50,000 chip drop daily</strong> (5× standard)</span></li>
+        <li><span class="marker">+</span><span><strong>Priority tournament seating</strong>, no waitlist</span></li>
+        <li><span class="marker">+</span><span><strong>Late re-entry window</strong> in MTTs</span></li>
+        <li><span class="marker">+</span><span><strong>Exclusive Whale Room</strong> (1K/2K stakes)</span></li>
+        <li><span class="marker">+</span><span>Custom avatar frames + animated emotes</span></li>
+        <li><span class="marker">+</span><span>Treasury voting on schedule + payout splits</span></li>
+        <li><span class="marker">+</span><span>Branded replay overlays</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== PROOF / FAIRNESS ==================== -->
+<section class="shell proof" id="fair">
+  <header class="section-head">
+    <div class="section-head__left">
+      <h2 class="section-head__title">Provably&nbsp;fair.<br/><em>Rigorously degenerate.</em></h2>
+      <p class="section-head__sub">Every shuffle is a SHA-256 commit-reveal. Server seed locked before the hand, mixed with player entropy at deal time, revealed after the river. Verify any hand from the URL.</p>
+    </div>
+    <span class="section-head__num">Ch.&nbsp;03&nbsp;/&nbsp;Trust</span>
+  </header>
+
+  <div class="proof__grid">
+    <pre class="proof__terminal">
+<span class="key">hand_id</span>      0x8a2f4c1d…b7e9
+<span class="key">timestamp</span>    2026-04-28T22:14:08Z
+<span class="key">server_seed</span>  <span class="hash">e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855</span>
+<span class="key">client_mix</span>   <span class="hash">a1b2c3d4e5f6…0193  · contributed by 6 seats</span>
+<span class="key">commit</span>       <span class="hash">da39a3ee5e6b4b0d3255bfef95601890afd80709</span>
+<span class="key">deck</span>         [As, Kh, 7c, …, 2d]  <span class="key">·</span> 52 cards
+<span class="key">verify</span>       <span class="ok">✓ commit matches reveal</span>
+<span class="key">replay</span>       <span class="ok">hyperpoker.gg/h/0x8a2f4c1d</span>
+<span class="key">status</span>       <span class="ok">PASS</span>
+    </pre>
+
+    <div>
+      <h3 style="font-family:var(--font-display); font-weight:700; font-size:24px; letter-spacing:-0.02em; text-transform:uppercase; margin:0 0 16px;">Three&nbsp;steps. Zero&nbsp;trust.</h3>
+      <ol style="list-style:none; padding:0; margin:0; counter-reset:fair;">
+        <li style="counter-increment:fair; padding: 18px 0; border-top:1px solid rgba(244,236,223,0.08); display:flex; gap: 18px;">
+          <span style="font-family:var(--font-mono); color:var(--ember); font-size:11px; letter-spacing:0.16em;">01</span>
+          <div>
+            <strong style="font-family:var(--font-display); text-transform:uppercase; letter-spacing:-0.02em; font-size:15px;">Commit before deal</strong>
+            <p style="margin:6px 0 0; color:var(--bone-2); font-size:14px;">Server publishes a SHA-256 hash of the seed. Anyone can record it.</p>
+          </div>
+        </li>
+        <li style="counter-increment:fair; padding: 18px 0; border-top:1px solid rgba(244,236,223,0.08); display:flex; gap: 18px;">
+          <span style="font-family:var(--font-mono); color:var(--ember); font-size:11px; letter-spacing:0.16em;">02</span>
+          <div>
+            <strong style="font-family:var(--font-display); text-transform:uppercase; letter-spacing:-0.02em; font-size:15px;">Mix in your entropy</strong>
+            <p style="margin:6px 0 0; color:var(--bone-2); font-size:14px;">Each seat contributes a random nonce. The deck is keyed by HMAC of the combined input.</p>
+          </div>
+        </li>
+        <li style="counter-increment:fair; padding: 18px 0; border-top:1px solid rgba(244,236,223,0.08); border-bottom:1px solid rgba(244,236,223,0.08); display:flex; gap: 18px;">
+          <span style="font-family:var(--font-mono); color:var(--ember); font-size:11px; letter-spacing:0.16em;">03</span>
+          <div>
+            <strong style="font-family:var(--font-display); text-transform:uppercase; letter-spacing:-0.02em; font-size:15px;">Reveal &amp; verify</strong>
+            <p style="margin:6px 0 0; color:var(--bone-2); font-size:14px;">After the river, the seed is published. Re-derive the deck yourself in two lines of code.</p>
+          </div>
+        </li>
+      </ol>
+      <a href="#" class="btn btn--mono" style="margin-top: 24px;">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="square"/></svg>
+        Read the open-source verifier
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== TOURNAMENTS ==================== -->
+<section class="shell tournaments" id="tournaments">
+  <header class="section-head">
+    <div class="section-head__left">
+      <h2 class="section-head__title">Treasury<br/><em>tournaments.</em></h2>
+      <p class="section-head__sub">Scheduled freerolls paid out in $HP from the live treasury. Holders skip the line. Late re-entry until break one. Top 15% cash.</p>
+    </div>
+    <span class="section-head__num">Ch.&nbsp;04&nbsp;/&nbsp;Schedule</span>
+  </header>
+
+  <!-- LIVE NOW banner -->
+  <div class="tourney-live">
+    <div>
+      <span class="tourney-live__badge"><span class="pulse"></span><span>Live now · 1,237 entered</span></span>
+      <h3 class="tourney-live__title">Friday<br/><em>main event.</em></h3>
+    </div>
+    <div class="tourney-stat">
+      <span class="tourney-stat__key">Prize pool</span>
+      <span class="tourney-stat__val tourney-stat__val--ember"><span id="lt-pool">2,400</span><span class="unit">SOL</span></span>
+    </div>
+    <div class="tourney-stat">
+      <span class="tourney-stat__key">Late reg ends</span>
+      <span class="tourney-stat__val tourney-stat__val--live"><span id="lt-countdown">00:14:32</span></span>
+    </div>
+    <a href="table.html" class="btn btn--primary btn--lg">
+      <span>Take seat</span>
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 7h12M8 2l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="square"/></svg>
+    </a>
+  </div>
+
+  <!-- Schedule cards -->
+  <div class="tourney-grid">
+    <article class="tourney-card">
+      <span class="tourney-card__day">— Daily · 21:00 UTC</span>
+      <h4 class="tourney-card__name">Daily Degen</h4>
+      <p class="tourney-card__type">Turbo · 6-max · 8min levels</p>
+      <div class="tourney-card__rows">
+        <div class="tourney-card__row"><span class="k">Entry</span><span class="v">Free · 1 re-entry</span></div>
+        <div class="tourney-card__row"><span class="k">Prize pool</span><span class="v v--ember">120 SOL</span></div>
+        <div class="tourney-card__row"><span class="k">Min cash</span><span class="v">15 SOL</span></div>
+        <div class="tourney-card__row"><span class="k">Starts in</span><span class="v" id="card-daily">04:21:08</span></div>
+      </div>
+      <a href="table.html" class="tourney-card__cta">Register
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 6h10M7 2l4 4-4 4" stroke="currentColor" stroke-width="1.4"/></svg>
+      </a>
+    </article>
+
+    <article class="tourney-card tourney-card--featured">
+      <span class="tourney-card__day">— Friday · 22:00 UTC</span>
+      <h4 class="tourney-card__name">Friday Main</h4>
+      <p class="tourney-card__type">Standard · 9-max · 15min levels</p>
+      <div class="tourney-card__rows">
+        <div class="tourney-card__row"><span class="k">Entry</span><span class="v">Free · 3 re-entries</span></div>
+        <div class="tourney-card__row"><span class="k">Prize pool</span><span class="v v--ember" id="card-friday-pool">2,400 SOL</span></div>
+        <div class="tourney-card__row"><span class="k">Min cash</span><span class="v">28 SOL</span></div>
+        <div class="tourney-card__row"><span class="k">Starts in</span><span class="v" id="card-friday">02d 04:21:08</span></div>
+      </div>
+      <a href="table.html" class="tourney-card__cta">Register
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 6h10M7 2l4 4-4 4" stroke="currentColor" stroke-width="1.4"/></svg>
+      </a>
+    </article>
+
+    <article class="tourney-card">
+      <span class="tourney-card__day">— Sunday · 20:00 UTC · holders only</span>
+      <h4 class="tourney-card__name">Whale Room</h4>
+      <p class="tourney-card__type">Deep stack · 6-max · 25min levels</p>
+      <div class="tourney-card__rows">
+        <div class="tourney-card__row"><span class="k">Entry</span><span class="v">≥ 100K $HP held</span></div>
+        <div class="tourney-card__row"><span class="k">Prize pool</span><span class="v v--ember">800 SOL</span></div>
+        <div class="tourney-card__row"><span class="k">Min cash</span><span class="v">12 SOL</span></div>
+        <div class="tourney-card__row"><span class="k">Seats</span><span class="v">42 / 80</span></div>
+      </div>
+      <a href="#" class="tourney-card__cta">Verify wallet
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 6h10M7 2l4 4-4 4" stroke="currentColor" stroke-width="1.4"/></svg>
+      </a>
+    </article>
+  </div>
+</section>
+
+<!-- ==================== THE LOOP ==================== -->
+<section class="shell loop" id="loop">
+  <header class="section-head">
+    <div class="section-head__left">
+      <h2 class="section-head__title">The&nbsp;loop<br/><em>that pays you.</em></h2>
+      <p class="section-head__sub">Creator fees fund the treasury. The treasury funds tournaments. Tournaments pay players. Players hold and trade $HP. Repeat.</p>
+    </div>
+    <span class="section-head__num">Ch.&nbsp;05&nbsp;/&nbsp;Mechanics</span>
+  </header>
+
+  <div class="loop__diagram">
+    <div class="loop__node">
+      <div>
+        <span class="loop__node-num">— 01 · INFLOW</span>
+        <h3 class="loop__node-name">Pump.fun fees</h3>
+        <p class="loop__node-desc">Every $HP trade pays creator fees. They route on-chain to the treasury wallet automatically.</p>
+      </div>
+      <div class="loop__node-stat">
+        <span class="k">24h inflow</span>
+        <span class="v v--live" id="loop-inflow">+184.20 SOL</span>
+      </div>
+    </div>
+
+    <div class="loop__node loop__node--live">
+      <div>
+        <span class="loop__node-num">— 02 · CUSTODY</span>
+        <h3 class="loop__node-name">Treasury vault</h3>
+        <p class="loop__node-desc">Balance is on-chain, public, verifiable. Holders vote on payout splits and the next prize drop.</p>
+      </div>
+      <div class="loop__node-stat">
+        <span class="k">Live balance</span>
+        <span class="v v--live" id="loop-balance">418,294 SOL</span>
+      </div>
+    </div>
+
+    <div class="loop__node">
+      <div>
+        <span class="loop__node-num">— 03 · DRAIN</span>
+        <h3 class="loop__node-name">Tournaments</h3>
+        <p class="loop__node-desc">Scheduled MTTs pay out $HP from the treasury. Top 15% of seats cash. Holders get late-reg windows.</p>
+      </div>
+      <div class="loop__node-stat">
+        <span class="k">Next drain</span>
+        <span class="v v--ember" id="loop-next">Fri 22:00</span>
+      </div>
+    </div>
+
+    <div class="loop__node">
+      <div>
+        <span class="loop__node-num">— 04 · OUTFLOW</span>
+        <h3 class="loop__node-name">Players cash</h3>
+        <p class="loop__node-desc">Winners receive $HP straight to their wallet. They hold, trade, or grind back in. The loop closes.</p>
+      </div>
+      <div class="loop__node-stat">
+        <span class="k">Last drain</span>
+        <span class="v v--ember">−2,400 SOL</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== RECENT WINS ==================== -->
+<section class="shell wins" id="wins">
+  <header class="section-head">
+    <div class="section-head__left">
+      <h2 class="section-head__title">Recent<br/><em>big hands.</em></h2>
+      <p class="section-head__sub">Live feed of pots over 50 big-blinds. Tap any row to play the auto-rendered clip.</p>
+    </div>
+    <span class="section-head__num">Ch.&nbsp;06&nbsp;/&nbsp;Live</span>
+  </header>
+
+  <div class="wins__list" id="wins-list">
+    <!-- rows injected by JS -->
+  </div>
+</section>
+
+<!-- ==================== FOOTER ==================== -->
+<footer class="footer">
+  <div class="shell">
+    <div class="footer__grid">
+      <div class="footer__brand">
+        <a href="/" class="nav__brand" aria-label="Hyper Poker home">
+          <span class="brand-mark">HP</span>
+          <span class="brand-name">Hyper&nbsp;Poker<span class="ticker">$HP</span></span>
+        </a>
+        <p class="footer__tag">A free-to-play card room for the chronically online. The treasury fills itself; you take it home.</p>
+      </div>
+      <div class="footer__col">
+        <h4>Play</h4>
+        <ul>
+          <li><a href="table.html">Cash tables</a></li>
+          <li><a href="table.html">Vs bots</a></li>
+          <li><a href="#tournaments">Tournaments</a></li>
+          <li><a href="#">Leaderboard</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h4>$HP</h4>
+        <ul>
+          <li><a href="#">Buy on pump.fun</a></li>
+          <li><a href="#treasury">Treasury wallet</a></li>
+          <li><a href="#holders">Holder perks</a></li>
+          <li><a href="#fair">Fairness</a></li>
+        </ul>
+      </div>
+      <div class="footer__col">
+        <h4>Community</h4>
+        <ul>
+          <li><a href="#">X / Twitter</a></li>
+          <li><a href="#">Discord</a></li>
+          <li><a href="#">Telegram</a></li>
+          <li><a href="#">GitHub</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <span>© 2026 Hyper Poker · No real-money wagering · 18+ where required</span>
+      <span>Built on Solana · Verified on-chain</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ==================== WATCH-A-HAND MODAL ==================== -->
+<div class="modal" id="watch-modal" role="dialog" aria-modal="true" aria-label="Sample hand replay">
+  <div class="modal__panel">
+    <button class="modal__close" id="watch-close" aria-label="Close">×</button>
+    <h3 class="modal__title">A river<br/><em>worth watching.</em></h3>
+    <p class="modal__sub">Auto-clip · Hand 0x8a2f…b7e9 · 12 seconds</p>
+
+    <div class="mini-felt">
+      <div class="mini-felt__cards" id="watch-cards"></div>
+    </div>
+
+    <div class="modal__caption" id="watch-caption">Press play.</div>
+
+    <div class="modal__actions">
+      <button class="btn btn--ghost" id="watch-replay">Replay</button>
+      <a href="table.html" class="btn btn--primary">
+        <span>Sit down</span>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 7h12M8 2l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="square"/></svg>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== BOOT / TRANSITION OVERLAY ==================== -->
+<div class="boot-overlay" id="boot-overlay" aria-hidden="true">
+  <div class="boot-overlay__inner">
+    <div class="boot-overlay__mark">HP</div>
+    <div class="boot-overlay__label">Shuffling<span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+  </div>
+</div>
+
+<script src="assets/landing.js"></script>
+</body>
+</html>
